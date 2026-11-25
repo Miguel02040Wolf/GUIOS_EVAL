@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}GUIOS EVAL{% endblock %} · GUIOS EVAL</title>
+<link rel="icon" href="{{ url_for('static', filename='favicon.svg') }}" type="image/svg+xml">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+</head>
+<body>
+{% set ep = request.endpoint %}
+<div class="shell">
+  <aside class="side">
+    <div class="brand">GUIOS <span class="tag">EVAL</span></div>
+    <div class="nav">
+      <div class="nav-grp">PRINCIPAL</div>
+      <a href="{{ url_for('panel') }}" class="{{ 'on' if ep=='panel' }}"><span class="ico">⌂</span>Inicio</a>
+      <a href="{{ url_for('evaluaciones') }}" class="{{ 'on' if ep in ['evaluaciones','nueva_evaluacion','paso1','paso2','paso3','paso4','participantes_view'] }}"><span class="ico">☰</span>Evaluaciones</a>
+      <a href="{{ url_for('comparar') }}" class="{{ 'on' if ep=='comparar' }}"><span class="ico">⇆</span>Comparar</a>
+      <div class="nav-grp">ADMINISTRACIÓN</div>
+      <a href="{{ url_for('catalogo') }}" class="{{ 'on' if ep=='catalogo' }}"><span class="ico">▦</span>Catálogo de factores</a>
+      <a href="{{ url_for('literatura_view') }}" class="{{ 'on' if ep=='literatura_view' }}"><span class="ico">❡</span>Calibración bibliográfica</a>
+      {% if g.user.rol in ['admin','auditor','revisor','lider'] %}
+      <a href="{{ url_for('auditoria') }}" class="{{ 'on' if ep=='auditoria' }}"><span class="ico">◷</span>Auditoría</a>
+      {% endif %}
+      <div class="nav-grp">SISTEMA</div>
+      <a href="{{ url_for('configuracion') }}" class="{{ 'on' if ep=='configuracion' }}"><span class="ico">⚙</span>Configuración</a>
+      <a href="{{ url_for('salir') }}"><span class="ico">⎋</span>Cerrar sesión</a>
+    </div>
+    <div class="bottom">GUIOS EVAL v2.2<br>Basado en GUIOS PRO FLOSS (Rea)</div>
+  </aside>
+  <div class="main">
+    <header class="top">
+      <form action="{{ url_for('evaluaciones') }}"><input type="text" name="q" placeholder="Buscar evaluaciones por código, organización o software..." aria-label="Buscar"></form>
+      <div class="pill">
+        <div style="text-align:right"><div style="font-weight:600">{{ g.user.nombre }}</div><div class="small muted">{{ NOMBRE_ROL[g.user.rol] }}</div></div>
+        {% if g.user.foto %}<img class="avatar foto" src="{{ url_for('foto_usuario', uid=g.user.id) }}?v={{ g.user.foto }}" alt="Foto de perfil">
+        {% else %}<div class="avatar">{{ g.user.nombre.split()[0][0] }}{{ g.user.nombre.split()[-1][0] }}</div>{% endif %}
+      </div>
+    </header>
+    {% if ev %}
+    <div class="ctx">
+      <span>Organización: <b>{{ ev.org_nombre }}</b></span>
+      <span>Evaluación: <b class="mono">{{ ev.codigo }}</b></span>
+      <span>Software: <b>{{ ev.sw_nombre }} {{ ev.sw_version or '' }}</b></span>
+      <span>Líder: <b>{{ ev.lider }}</b></span>
+      <span>Estado: <span class="chip {{ ev.estado }}">{{ ESTADOS[ev.estado] }}</span></span>
+      {% if ev.revision_de %}<span>Revisión de: <b>EV-{{ '%04d' % ev.revision_de }}</b></span>{% endif %}
+    </div>
+    {% endif %}
+    <main class="content">
+      {% for cat, msg in get_flashed_messages(with_categories=true) %}<div class="alert {{ cat }}">{{ msg }}</div>{% endfor %}
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+</div>
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,142 @@
+{% extends 'base.html' %}{% block title %}Calibración bibliográfica{% endblock %}
+{% block scripts %}<script>
+(function(){
+  var T={{ corpus_titulo|tojson }}, R={{ corpus_resumen|tojson }}, D={{ desde|tojson }}, H={{ hasta|tojson }};
+  function contar(t){return (t.match(/\b(AND|OR|NOT)\b/g)||[]).length;}
+  document.querySelectorAll('input.term').forEach(function(inp){
+    var td=inp.parentNode, prev=td.querySelector('.prev'), res=td.querySelector('.res');
+    function pintar(){
+      var n=contar(T)+contar(R)+contar(inp.value)+3;
+      prev.textContent='TITLE('+T+') AND ABS('+R+') AND TITLE-ABS('+inp.value+') AND PUBYEAR '+D+'-'+H;
+      res.textContent=n>5?'':'';
+    }
+    inp.addEventListener('input',pintar); pintar();
+    td.querySelector('.probar').addEventListener('click',function(){
+      res.textContent='Consultando OpenAlex...';
+      fetch('{{ url_for('api_literatura_probar') }}?t='+encodeURIComponent(inp.value)).then(function(r){return r.json();}).then(function(d){
+        if(!d.ok){res.textContent=d.error;return;}
+        res.innerHTML='<b>'+d.conteo+'</b> estudios '+D+'-'+H+(d.top.length?' · más citado: '+d.top[0][0].replace(/</g,'&lt;')+' ('+d.top[0][1]+')':'');
+      }).catch(function(){res.textContent='Sin conexión con el servidor.';});
+    });
+  });
+})();
+</script>{% endblock %}
+{% block content %}
+<div class="head">
+  <div><h1>Calibración bibliográfica</h1><div class="muted">Calcula la importancia de la literatura (IL) de cada factor con estudios recientes y, con ella, la importancia sugerida (IS) del catálogo. En la tesis este paso se hizo a mano con el corpus 2008 a 2019; aquí se repite de forma automática y trazable.</div></div>
+</div>
+
+<div class="grid g2">
+  <div class="card">
+    <div class="upper">Cómo se calcula (tesis, Sección 5.2.3)</div>
+    <ol class="pasos-lit">
+      <li><b>Corpus.</b> Estudios sobre adopción o migración de software libre publicados en la ventana de años, tomados de OpenAlex.</li>
+      <li><b>Citas del factor (c).</b> Estudios del corpus que mencionan los términos del factor en el título o el resumen.</li>
+      <li><b>Densidad.</b> r = c / n, donde n es el número de subfactores del factor (Ecuación 5.1).</li>
+      <li><b>IL.</b> Cuartil que ocupa r entre todos los factores: 1 si r ≤ Q1, 2 si r ≤ Q2, 3 si r ≤ Q3 y 4 en otro caso (Ecuación 5.2).</li>
+      <li><b>IS.</b> Cruce de IE e IL en la Figura 5.10. IE es la importancia del experto; queda en 3 y se puede cambiar por factor.</li>
+    </ol>
+    <div class="small muted">Validación: con los datos de la Tabla 5.3 (corpus 2008 a 2019) el motor reproduce las 18 IL y las 18 IS de la tesis.</div>
+  </div>
+  <div class="card">
+    <div class="upper">Ejecutar una calibración</div>
+    <p class="small" style="margin:8px 0">Catálogo publicado: <b>{{ cat.nombre }} v{{ cat.version }}</b> · Ventana: <b class="mono">{{ desde }} a {{ hasta }}</b></p>
+    <div class="formula small mono">título: {{ corpus_titulo }}<br>resumen: {{ corpus_resumen }}<br>subcampos OpenAlex: {{ subcampos }}<br>años: {{ desde }}-{{ hasta }}</div>
+    {% if gestiona %}
+    <div class="acciones" style="margin-top:12px">
+      <form method="post" action="{{ url_for('literatura_ejecutar') }}" onsubmit="this.querySelector('button').textContent='Consultando OpenAlex... (unos 30 s)';this.querySelector('button').disabled=true"><input type="hidden" name="modo" value="vivo"><button class="btn pri">Consultar OpenAlex en vivo</button></form>
+      <form method="post" action="{{ url_for('literatura_ejecutar') }}"><input type="hidden" name="modo" value="guardado"><button class="btn">Usar corrida guardada 2020-2025</button></form>
+    </div>
+    <div class="small muted" style="margin-top:8px">La consulta en vivo necesita internet. La corrida guardada es la consulta real del 25/11/2026 y sirve para trabajar sin conexión.</div>
+    {% else %}<div class="small muted" style="margin-top:10px">Solo el administrador de catálogo ejecuta calibraciones.</div>{% endif %}
+  </div>
+</div>
+
+{% if actual %}
+{% set u = actual.umbrales %}
+<div class="card">
+  <div class="acciones" style="justify-content:space-between;align-items:flex-start">
+    <div><h2 style="margin:0">Calibración #{{ actual.id }} · {{ actual.desde }} a {{ actual.hasta }}</h2>
+      <div class="acciones" style="margin-top:8px">
+        <span class="chip">{{ actual.fuente }}</span><span class="chip">{{ actual.fecha }}</span>
+        <span class="chip">Corpus: {{ actual.corpus }} estudios</span>
+        <span class="chip mono">Q1 {{ u[0]|num }} · Q2 {{ u[1]|num }} · Q3 {{ u[2]|num }}</span>
+        <span class="chip">Sobre catálogo v{{ actual.cat_version }}</span>
+        {% if actual.aplicada_en %}<span class="chip publicado">Aplicada en v{{ actual.apl_version }}</span>{% endif %}
+      </div></div>
+    <div class="acciones">
+      <a class="btn" href="{{ url_for('literatura_csv', cid=actual.id) }}">Exportar CSV</a>
+      {% if gestiona and not actual.aplicada_en %}
+      <form method="post" action="{{ url_for('literatura_aplicar', cid=actual.id) }}"><button class="btn">Aplicar como borrador</button></form>
+      <form method="post" action="{{ url_for('literatura_aplicar', cid=actual.id) }}" onsubmit="return confirm('Se creará y publicará una versión nueva del catálogo con la IS recalculada. Las evaluaciones existentes conservan su copia. ¿Continuar?')"><input type="hidden" name="publicar" value="1"><button class="btn pri">Aplicar y publicar</button></form>
+      {% endif %}
+    </div>
+  </div>
+  <table class="t" style="margin-top:14px">
+    <tr><th>Factor</th><th>Dimensión</th><th class="c">n</th><th class="c">Citas (c)</th><th class="c">r = c/n</th><th class="c">IL</th><th class="c">IE</th><th class="c">IS nueva</th><th class="c">IS anterior</th><th></th></tr>
+    {% for x in actual.filas %}
+    <tr>
+      <td><b>{{ x.nombre }}</b></td><td><span class="chip dim-{{ x.dimension }}">{{ x.dimension }}</span></td>
+      <td class="c mono">{{ x.n }}</td><td class="c mono">{{ x.citas }}</td><td class="c mono">{{ x.r|num }}</td>
+      <td class="c"><span class="nivel n{{ x.il }}">{{ x.il }}</span></td><td class="c mono">{{ x.ie }}</td>
+      <td class="c"><span class="chip niv{{ x.is_nueva }}">{{ NIVELES[x.is_nueva] }} ({{ x.is_nueva }})</span></td>
+      <td class="c small muted">{{ NIVELES[x.is_anterior] }} ({{ x.is_anterior }}){% if x.is_nueva > x.is_anterior %} <b class="sube">▲</b>{% elif x.is_nueva < x.is_anterior %} <b class="baja">▼</b>{% endif %}</td>
+      <td><button class="btn sm" type="button" onclick="var d=document.getElementById('docs{{ loop.index }}');d.hidden=!d.hidden">Ver estudios</button></td>
+    </tr>
+    <tr id="docs{{ loop.index }}" hidden><td colspan="10" class="docs">
+      <div class="small"><b>Términos:</b> <span class="mono">{{ x.terminos }}</span></div>
+      {% if x.top %}<ol class="small">{% for d in x.top %}<li>{{ d[0] }} ({{ d[1] }}) · {{ d[2] }} citas recibidas{% if d[3] %} · <a href="{{ d[3] }}" target="_blank" rel="noopener">DOI</a>{% endif %}</li>{% endfor %}</ol>
+      {% else %}<div class="small muted">No hubo estudios con esos términos en la ventana elegida.</div>{% endif %}
+      {% if x.consulta %}<a class="small" href="{{ x.consulta }}" target="_blank" rel="noopener">Abrir la consulta reproducible en OpenAlex</a>{% endif %}
+    </td></tr>
+    {% endfor %}
+  </table>
+</div>
+{% endif %}
+
+{% if tendencia %}
+<details class="card" id="tendencia" open>
+  <summary><b>Tendencia en la literatura {{ tendencia.desde }}–{{ tendencia.hasta }}</b> <span class="small muted">¿qué factores ganan o pierden atención desde la tesis (2008–2019) hasta hoy (2020–2025)?</span></summary>
+  <div class="acciones" style="justify-content:space-between;margin:10px 0">
+    <span class="small muted">Porcentaje de estudios del corpus que mencionan cada factor, por año (OpenAlex, {{ tendencia.corpus_total }} estudios, corrida del {{ tendencia.fecha }}). La línea punteada marca 2020.</span>
+    {% if gestiona %}<form method="post" action="{{ url_for('literatura_tendencia') }}" onsubmit="this.querySelector('button').textContent='Consultando OpenAlex (≈30 s)...';this.querySelector('button').disabled=true"><button class="btn sm">Actualizar en vivo</button></form>{% endif %}
+  </div>
+  <div class="tend">
+  {% for t in tendencia.filas %}<div class="item">
+    <div class="acciones" style="justify-content:space-between"><b>{{ t.nombre }}</b><span class="chip {{ 'ok' if t.etiqueta=='Sube' else 'mal' if t.etiqueta=='Baja' else 'info' }}">{{ '↑' if t.etiqueta=='Sube' else '↓' if t.etiqueta=='Baja' else '→' }} {{ t.etiqueta }}</span></div>
+    {% if t.n_anterior + t.n_reciente == 0 %}<p class="small muted" style="height:60px">Sin estudios con estos términos: revisa los términos de búsqueda del factor.</p>{% else %}
+    <svg viewBox="0 0 240 60" preserveAspectRatio="none"><line x1="{{ t.corte_x }}" y1="0" x2="{{ t.corte_x }}" y2="60" stroke="#94a3b8" stroke-dasharray="3 3"/><polyline points="{{ t.puntos }}" fill="none" stroke="{{ '#15803d' if t.etiqueta=='Sube' else '#b91c1c' if t.etiqueta=='Baja' else '#2563eb' }}" stroke-width="2"/></svg>{% endif %}
+    <div class="small">{{ t.pct_anterior|num(1) }} % ({{ t.n_anterior }}) → <b>{{ t.pct_reciente|num(1) }} %</b> ({{ t.n_reciente }}) <span class="muted">· pendiente {{ '%+.2f'|format(t.pendiente) }} pp/año</span></div>
+  </div>{% endfor %}
+  </div>
+</details>
+{% endif %}
+
+<details class="card"{% if not actual %} open{% endif %}>
+  <summary><b>Términos de búsqueda e importancia del experto por factor</b> <span class="small muted">(editable por el administrador de catálogo)</span></summary>
+  <form method="post" action="{{ url_for('literatura_terminos') }}">
+    <div class="acciones" style="margin:12px 0"><label class="small">Ventana de años</label>
+      <input type="number" name="desde" value="{{ desde }}" style="width:100px" {{ 'disabled' if not gestiona }}> a
+      <input type="number" name="hasta" value="{{ hasta }}" style="width:100px" {{ 'disabled' if not gestiona }}></div>
+    <table class="t">
+      <tr><th>Factor</th><th class="c">n</th><th>Términos (OpenAlex, máximo 4 con OR)</th><th class="c">IE</th><th class="c">IS actual</th></tr>
+      {% for f in factores %}<tr><td>{{ f.nombre }}<input type="hidden" name="nombre" value="{{ f.nombre }}"></td><td class="c mono">{{ f.n }}</td>
+        <td><input type="text" name="t::{{ f.nombre }}" value="{{ f.terminos }}" class="mono small term" {{ 'disabled' if not gestiona }}>
+          <div class="small muted mono prev" style="margin-top:4px"></div>
+          <div class="acciones" style="margin-top:4px"><button type="button" class="btn sm probar">Probar consulta</button><span class="small res"></span></div></td>
+        <td class="c"><select name="ie::{{ f.nombre }}" style="width:70px" {{ 'disabled' if not gestiona }}>{% for k in [1,2,3,4] %}<option {{ 'selected' if k==f.ie }}>{{ k }}</option>{% endfor %}</select></td>
+        <td class="c small">{{ NIVELES[f.is_actual] }}</td></tr>{% endfor %}
+    </table>
+    {% if gestiona %}<div class="acciones" style="margin-top:12px"><button class="btn pri">Guardar términos</button></div>{% endif %}
+  </form>
+</details>
+
+{% if corridas %}
+<div class="card" style="padding:0">
+  <table class="t"><tr><th>#</th><th>Fecha</th><th>Ventana</th><th>Fuente</th><th class="c">Corpus</th><th>Usuario</th><th>Catálogo</th><th></th></tr>
+  {% for c in corridas %}<tr><td class="mono">{{ c.id }}</td><td class="mono small">{{ c.fecha }}</td><td class="mono">{{ c.desde }}-{{ c.hasta }}</td><td class="small">{{ c.fuente }}</td><td class="c mono">{{ c.corpus }}</td><td>{{ c.usuario }}</td>
+    <td class="small">{% if c.aplicada_en %}Aplicada en v{{ c.apl_version }}{% else %}Sin aplicar{% endif %}</td><td><a class="btn sm" href="?c={{ c.id }}">Ver</a></td></tr>{% endfor %}
+  </table>
+</div>
+{% endif %}
+{% endblock %}

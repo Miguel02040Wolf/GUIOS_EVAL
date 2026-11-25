@@ -1,0 +1,29 @@
+{% extends 'base.html' %}{% block title %}Evaluaciones{% endblock %}
+{% block content %}
+<div class="head">
+  <div><h1>Historial de evaluaciones</h1><div class="muted">Todas las evaluaciones quedan guardadas con su responsable, fecha y resultado.</div></div>
+  {% if g.user.rol in ['lider','admin'] %}<a class="btn pri" href="{{ url_for('nueva_evaluacion') }}">+ Nueva evaluación</a>{% endif %}
+</div>
+<form class="card acciones" method="get">
+  <input type="text" name="q" value="{{ q }}" placeholder="Buscar por código, organización o software" style="max-width:380px">
+  <select name="estado" style="max-width:200px"><option value="">Todos los estados</option>
+    {% for k,v in ESTADOS.items() %}<option value="{{ k }}" {{ 'selected' if estado==k }}>{{ v }}</option>{% endfor %}</select>
+  <button class="btn">Filtrar</button>
+</form>
+<div class="card" style="padding:0">
+<table class="t">
+  <tr><th>Código</th><th>Software</th><th>Organización</th><th>Líder</th><th>Creada</th><th>Estado</th><th>Índice</th><th>Recomendación</th><th></th></tr>
+  {% for e, r in filas %}
+  <tr>
+    <td class="mono">{{ e.codigo }}{% if e.revision_de %}<div class="small muted">rev. de EV-{{ '%04d' % e.revision_de }}</div>{% endif %}</td>
+    <td><b>{{ e.sw_nombre }}</b> <span class="muted">{{ e.sw_version or '' }}</span></td>
+    <td>{{ e.org_nombre }}</td><td>{{ e.lider }}</td><td class="mono small">{{ e.creado }}</td>
+    <td><span class="chip {{ e.estado }}">{{ ESTADOS[e.estado] }}</span></td>
+    <td class="mono">{{ (r.puntaje ~ '/100') if r and r.puntaje is not none else '-' }}</td>
+    <td>{% if r and r.recomendacion %}<span class="chip {{ r.recomendacion }}">Recomendación {{ r.recomendacion }}</span>{% else %}<span class="muted">-</span>{% endif %}</td>
+    <td class="acciones"><a class="btn sm" href="{{ url_for('paso4' if e.estado in ['cerrada','en_revision'] else 'paso2', eid=e.id) }}">Abrir</a></td>
+  </tr>
+  {% else %}<tr><td colspan="9" class="empty">No hay evaluaciones que coincidan con la búsqueda.</td></tr>{% endfor %}
+</table>
+</div>
+{% endblock %}

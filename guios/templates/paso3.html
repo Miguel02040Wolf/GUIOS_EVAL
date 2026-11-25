@@ -1,0 +1,72 @@
+{% extends 'base.html' %}{% block title %}Subfactores{% endblock %}
+{% block content %}
+<div class="head">
+  <div><h1>Evaluación · Subfactores</h1><div class="muted">Pasos 3 y 4 de GUIOS: indica en qué medida se cumple cada subfactor. Un solo clic por subfactor; todo se guarda automáticamente.</div></div>
+  <a class="btn pri" href="{{ url_for('paso4', eid=ev.id) }}">Ver resultado →</a>
+</div>
+{% set actual = 3 %}{% include 'stepper.html' %}
+<div class="card">
+  <div class="acciones" style="justify-content:space-between"><b>Mi progreso</b><span class="mono" id="prog-txt">{{ mis_hechas }}/{{ total }} subfactores</span></div>
+  <div class="bar ok" style="margin-top:8px"><i id="prog-bar" style="width:{{ (100*mis_hechas/total)|round if total else 0 }}%"></i></div>
+</div>
+{% if not relevantes %}
+  <div class="card empty">Todavía no hay factores relevantes. Primero valora la importancia de los factores en el <a href="{{ url_for('paso2', eid=ev.id) }}">paso 2</a>.</div>
+{% else %}
+{% if not puede %}<div class="alert warn">Vista de solo lectura.</div>{% endif %}
+<div class="split">
+  <div class="card flist" style="padding:12px">
+    <div class="upper" style="padding:4px 8px 10px">Factores relevantes</div>
+    {% for f in relevantes %}
+      {% set hechos = namespace(n=0) %}{% for s in f.subfactores %}{% if mias.get(s.key) and mias[s.key].valor %}{% set hechos.n = hechos.n + 1 %}{% endif %}{% endfor %}
+      <a href="?f={{ f.key }}" class="{{ 'on' if fac and f.key==fac.key }}" id="fl-{{ f.key }}">
+        <div>{{ f.nombre }}</div>
+        <div class="small muted"><span class="cnt">{{ hechos.n }}</span>/{{ f.total_sub }} evaluados · IR {{ NIVELES[f.ir] }}</div>
+        <div class="bar ok"><i style="width:{{ (100*hechos.n/f.total_sub)|round if f.total_sub else 0 }}%"></i></div>
+      </a>
+    {% endfor %}
+  </div>
+  <div>
+    {% if fac %}
+    <div class="card">
+      <div class="acciones" style="justify-content:space-between">
+        <div><div class="upper">Subfactores de</div><h2 style="margin:2px 0">{{ fac.nombre }}</h2><div class="small muted">{{ fac.descripcion or '' }}</div></div>
+        <div style="text-align:right"><div class="upper">Ponderación media (consenso)</div><div class="mono" style="font-size:22px;font-weight:700" id="pm">{{ fac.pm|num }}</div><span id="foda" class="chip {{ fac.foda or '' }}">{{ fac.foda or 'sin evaluar' }}</span></div>
+      </div>
+      {% if puede %}
+      <div class="ia-bar">
+        {% if ia_activa %}<button type="button" class="btn pri" id="ia-sugerir" data-factor="{{ fac.key }}">✦ Sugerir con IA</button>
+        <button type="button" class="btn" id="ia-todas" hidden>Aceptar las de confianza ≥ 70 %</button>{% endif %}
+        <span class="small muted" id="ia-estado">{% if ia_activa %}La IA propone una respuesta por subfactor con su justificación y fuentes de OpenAlex; tú decides.{% endif %}</span>
+      </div>
+      <div class="acciones qa" style="margin-top:10px">
+        <span class="small"><b>Acción rápida:</b> marcar</span>
+        <select id="qa-valor" style="width:200px"><option value="4">Cumple</option><option value="3">Cumple parcialmente</option><option value="2">Desconozco</option><option value="1">No cumple</option></select>
+        <span class="small"><input type="checkbox" id="qa-pend" checked style="width:auto;vertical-align:middle"> solo los pendientes</span>
+        <button type="button" class="btn sm" id="qa-aplicar">Aplicar</button>
+      </div>
+      {% endif %}
+    </div>
+    {% for s in fac.subfactores %}{% set m = mias.get(s.key) %}
+    <div class="sub {{ 'hecho' if m and m.valor }}" data-key="{{ s.key }}" data-texto="{{ s.texto }}">
+      <div class="row">
+        <div class="txt">{{ loop.index }}. {{ s.texto }}{% if m and m.origen and m.origen.startswith('ia:') %} <span class="chip ia">IA · {{ m.origen[3:] }}</span>{% endif %}</div>
+        <div class="seg ps">{% for v in [1,2,3,4] %}<button type="button" data-v="{{ v }}" class="{{ 'sel' if m and m.valor==v }}" {{ 'disabled' if not puede }} title="{{ NIVELES_PS[v] }}">{{ ['No cumple','Desconozco','Cumple parcialmente','Cumple'][v-1] }}</button>{% endfor %}</div>
+      </div>
+      <div class="small muted" style="margin-top:6px">Consenso: <span class="c-ps mono">{{ s.ps|num }}</span> (<span class="c-n">{{ s.n }} respuesta{{ 's' if s.n!=1 }}</span>){% if s.desacuerdo %} <span class="chip warn">desacuerdo entre decisores</span>{% endif %}</div>
+      <details {{ 'open' if m and (m.comentario or m.evidencia) }}><summary>Comentario y evidencia</summary>
+        <div class="extra">
+          <div><label>Comentario</label><textarea class="com" rows="2" {{ 'disabled' if not puede }}>{{ m.comentario if m and m.comentario else '' }}</textarea></div>
+          <div><label>Evidencia (enlace o referencia)</label><input type="text" class="evi" value="{{ m.evidencia if m and m.evidencia else '' }}" placeholder="https://... o nombre del documento" {{ 'disabled' if not puede }}></div>
+        </div>
+      </details>
+    </div>
+    {% endfor %}
+    <div class="card small"><b>Escala literal de cumplimiento:</b> No cumple el requisito (1), Desconozco si cumple el requisito (2), Cumple parcialmente el requisito (3) y Cumple el requisito (4). Un subfactor sin respuesta queda <b>sin evaluar</b> y no se cuenta como "no cumple".
+    <div class="sep3" style="margin-top:10px"><div><b>Dato</b><br>Respuesta, comentario y evidencia de cada decisor.</div><div><b>Cálculo</b><br>Consenso por subfactor y ponderación media automática.</div><div><b>Decisión</b><br>La emite el revisor en el paso 4 con comentario obligatorio.</div></div>
+    <span class="saved" id="saved">✓ Guardado</span></div>
+    {% endif %}
+  </div>
+</div>
+{% endif %}
+{% endblock %}
+{% block scripts %}<script>initPaso3({{ ev.id }}, {{ total }}, {{ mis_hechas }});</script>{% endblock %}

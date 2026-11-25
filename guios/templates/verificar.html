@@ -1,0 +1,30 @@
+{% extends 'publico.html' %}{% block title %}Verificar informe{% endblock %}
+{% block caja %}
+<div class="upper">Sello de integridad</div>
+<h1 style="margin:6px 0 4px">Verificar un informe</h1>
+<p class="muted" style="margin-top:0">Comprueba que un informe PDF de GUIOS EVAL es auténtico y no fue modificado.</p>
+{% if resultado %}
+  {% if resultado.ok %}
+  <div class="alert ok"><b>✓ {{ resultado.titulo }}</b><br>{{ resultado.detalle }}</div>
+  {% else %}
+  <div class="alert error"><b>✗ {{ resultado.titulo }}</b><br>{{ resultado.detalle }}</div>
+  {% endif %}
+  {% if sello %}
+  <table class="t small" style="margin-bottom:14px">
+    <tr><td>Folio</td><td class="mono">{{ sello.folio }}</td></tr>
+    <tr><td>Evaluación</td><td><b>{{ sello.datos.codigo }}</b> · {{ sello.datos.organizacion }}</td></tr>
+    <tr><td>Software</td><td>{{ sello.datos.software }}</td></tr>
+    <tr><td>Recomendación</td><td><b>{{ sello.datos.recomendacion }}</b> · índice {{ sello.datos.indice }}/100</td></tr>
+    <tr><td>Estado y decisión</td><td>{{ sello.datos.estado }} · {{ sello.datos.decision }}</td></tr>
+    <tr><td>Emitido</td><td>{{ sello.fecha }}</td></tr>
+    <tr><td>Huella de los datos</td><td class="mono" style="word-break:break-all">{{ sello.hash_datos }}</td></tr>
+  </table>
+  {% endif %}
+{% endif %}
+<form method="post" enctype="multipart/form-data">
+  <div class="field"><label>Sube el archivo PDF del informe</label><input type="file" name="pdf" accept="application/pdf"></div>
+  <div class="field"><label>O escribe el folio impreso junto al código QR</label><input type="text" name="folio" class="mono" value="{{ folio or '' }}" placeholder="GE-XXXXXXXX"></div>
+  <button class="btn pri" style="width:100%;justify-content:center;padding:11px">Verificar</button>
+</form>
+<p class="small" style="text-align:center;margin-top:12px"><a href="{{ url_for('login') }}">Ir a GUIOS EVAL</a></p>
+{% endblock %}

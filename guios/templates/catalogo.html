@@ -1,0 +1,54 @@
+{% extends 'base.html' %}{% block title %}Catálogo{% endblock %}
+{% block content %}
+<div class="head">
+  <div><h1>Catálogo de factores y subfactores</h1><div class="muted">Agrega, modifica o elimina dimensiones, factores y subfactores. Cada versión publicada queda fija para las evaluaciones que la usan.</div></div>
+  {% if gestiona and cat %}<form method="post" action="{{ url_for('catalogo_nueva_version') }}"><input type="hidden" name="base_id" value="{{ cat.id }}"><button class="btn">Crear versión nueva desde v{{ cat.version }}</button></form>{% endif %}
+</div>
+<div class="card" style="padding:0">
+<table class="t"><tr><th>Versión</th><th>Estado</th><th>Factores</th><th>Subfactores</th><th>Evaluaciones que la usan</th><th>Nota</th><th></th></tr>
+{% for v in versiones %}<tr><td><b>{{ v.nombre }} v{{ v.version }}</b></td><td><span class="chip {{ v.estado }}">{{ v.estado }}</span></td><td class="mono">{{ v.nf }}</td><td class="mono">{{ v.ns }}</td><td class="mono">{{ v.ne }}</td><td class="small muted">{{ v.nota or '' }}</td>
+<td class="acciones"><a class="btn sm" href="?c={{ v.id }}">Ver</a>{% if gestiona and v.estado=='borrador' %}<form method="post" action="{{ url_for('catalogo_publicar', cid=v.id) }}"><button class="btn sm ok">Publicar</button></form>{% endif %}</td></tr>{% endfor %}
+</table></div>
+{% if cat %}
+<div class="card">
+  <div class="acciones" style="justify-content:space-between">
+    <div><h2 style="margin:0">{{ cat.nombre }} v{{ cat.version }} <span class="chip {{ cat.estado }}">{{ cat.estado }}</span></h2>
+    {% if not puede %}<div class="small muted">{% if cat.estado!='borrador' %}Versión {{ cat.estado }}: no se edita. Para cambiar factores o subfactores, crea una versión nueva.{% else %}Solo el administrador de catálogo edita esta versión.{% endif %}</div>{% endif %}</div>
+    <form class="acciones" method="get"><input type="hidden" name="c" value="{{ cat.id }}"><input type="text" name="q" value="{{ q }}" placeholder="Buscar factores..." style="width:200px">
+      <select name="dim" style="width:170px"><option value="">Todas las dimensiones</option>{% for d in DIMENSIONES %}<option {{ 'selected' if dim==d }}>{{ d }}</option>{% endfor %}</select><button class="btn">Filtrar</button></form>
+    {% if puede %}<button class="btn pri" type="button" onclick="abrirFactor()">+ Nuevo factor</button>{% endif %}
+  </div>
+</div>
+{% for f, subs in factores %}
+<div class="card {{ '' if f.activo else 'off' }}" id="f{{ f.id }}">
+  <div class="acciones" style="justify-content:space-between;align-items:flex-start">
+    <div style="flex:1"><h3 style="margin:0">{{ f.nombre }} {% if not f.activo %}<span class="chip">inactivo</span>{% endif %}</h3>
+      <div class="small muted">{{ f.descripcion or '' }}</div>
+      <div class="acciones" style="margin-top:6px"><span class="chip dim-{{ f.dimension }}">{{ f.dimension }}</span><span class="chip">IS: {{ NIVELES[f.is_valor] }}</span>{% if f.il %}<span class="chip mono" title="IS = Figura 5.10 (IE, IL)">IE {{ f.ie or 3 }} · IL {{ f.il }} · {{ f.citas }} citas{% if f.calibracion_id %} (calibración #{{ f.calibracion_id }}){% else %} (Tabla 5.3){% endif %}</span>{% endif %}<span class="chip">Alcance: {{ f.alcance }}</span><span class="chip">{{ subs|length }} subfactores</span></div></div>
+    {% if puede %}<div class="acciones"><button class="btn sm" type="button" onclick='abrirFactor({{ {"id":f.id,"nombre":f.nombre,"dimension":f.dimension,"is_valor":f.is_valor,"alcance":f.alcance,"descripcion":f.descripcion or "","activo":f.activo}|tojson }})'>Editar</button>
+      <form method="post" action="{{ url_for('factor_eliminar', cid=cat.id, fid=f.id) }}" onsubmit="return confirm('¿Eliminar el factor {{ f.nombre }} y todos sus subfactores?')"><button class="btn sm mal">Eliminar</button></form></div>{% endif %}
+  </div>
+  <table class="t" style="margin-top:10px">
+  {% for s in subs %}<tr><td class="mono small" style="width:30px">{{ loop.index }}</td><td>
+    {% if puede %}<form method="post" action="{{ url_for('subfactor_guardar', cid=cat.id) }}" class="acciones" style="flex-wrap:nowrap"><input type="hidden" name="sub_id" value="{{ s.id }}"><input type="hidden" name="factor_id" value="{{ f.id }}"><input type="text" name="texto" value="{{ s.texto }}"><button class="btn sm">Guardar</button></form>{% else %}{{ s.texto }}{% endif %}</td>
+    {% if puede %}<td style="width:90px"><form method="post" action="{{ url_for('subfactor_eliminar', cid=cat.id, sid=s.id) }}" onsubmit="return confirm('¿Eliminar este subfactor?')"><button class="btn sm mal">Eliminar</button></form></td>{% endif %}</tr>{% endfor %}
+  {% if puede %}<tr><td></td><td colspan="2"><form method="post" action="{{ url_for('subfactor_guardar', cid=cat.id) }}" class="acciones" style="flex-wrap:nowrap"><input type="hidden" name="factor_id" value="{{ f.id }}"><input type="text" name="texto" placeholder="Nuevo subfactor para {{ f.nombre }}"><button class="btn sm pri">+ Agregar</button></form></td></tr>{% endif %}
+  </table>
+</div>
+{% else %}<div class="card empty">No hay factores con ese filtro.</div>{% endfor %}
+{% endif %}
+<dialog id="dlg-factor"><form method="post" action="{{ url_for('factor_guardar', cid=cat.id) if cat else '#' }}">
+  <div class="dh" id="dlg-titulo">Nuevo factor</div>
+  <div class="db"><input type="hidden" name="factor_id" id="ff-id">
+    <div class="field"><label>Nombre <span class="req">*</span></label><input type="text" name="nombre" id="ff-nombre" required></div>
+    <div class="grid g3" style="gap:10px">
+      <div class="field"><label>Dimensión</label><select name="dimension" id="ff-dim">{% for d in DIMENSIONES %}<option>{{ d }}</option>{% endfor %}</select></div>
+      <div class="field"><label>Importancia sugerida</label><select name="is_valor" id="ff-is">{% for k,v in NIVELES.items() %}<option value="{{ k }}">{{ v }} ({{ k }})</option>{% endfor %}</select></div>
+      <div class="field"><label>Alcance</label><select name="alcance" id="ff-alc"><option>Interno</option><option>Externo</option><option>Ambos</option></select></div>
+    </div>
+    <div class="field"><label>Descripción</label><textarea name="descripcion" id="ff-desc"></textarea></div>
+    <div class="field"><label>Estado</label><select name="activo" id="ff-act"><option value="1">Activo</option><option value="0">Inactivo</option></select></div>
+  </div>
+  <div class="df"><button type="button" class="btn" onclick="document.getElementById('dlg-factor').close()">Cancelar</button><button class="btn pri">Guardar factor</button></div>
+</form></dialog>
+{% endblock %}

@@ -1,0 +1,173 @@
+{% extends 'base.html' %}{% block title %}Resultado{% endblock %}
+{% block content %}
+<div class="head">
+  <div><h1>Evaluación · Resultado y recomendación</h1><div class="muted">Pasos 5 y 6 de GUIOS: clasificación FODA de cada factor y recomendación sobre la adopción.</div></div>
+  <div class="acciones">
+    <a class="btn" href="{{ url_for('informe', eid=ev.id) }}">Generar informe</a>
+    <a class="btn" href="{{ url_for('informe_pdf', eid=ev.id) }}">Descargar PDF</a>
+    <a class="btn" href="{{ url_for('exportar_xlsx', eid=ev.id) }}">Exportar Excel</a>
+    <a class="btn" href="{{ url_for('exportar_csv', eid=ev.id) }}">CSV</a>
+    {% if ev.estado=='cerrada' and g.user.rol in ['lider','admin'] %}
+      <form method="post" action="{{ url_for('nueva_revision', eid=ev.id) }}"><button class="btn">Reabrir como nueva revisión</button></form>{% endif %}
+  </div>
+</div>
+{% set actual = 4 %}{% include 'stepper.html' %}
+{% if res.sin_id or res.pendientes %}
+<div class="alert warn"><b>Validación de completitud (RF-07):</b>
+  {% if res.sin_id %}{{ res.sin_id }} factor(es) aún sin importancia del decisor. {% endif %}
+  {% if res.pendientes %}Factores relevantes con subfactores sin evaluar: {{ res.pendientes|join(', ') }}.{% endif %}
+  El resultado mostrado es parcial.</div>
+{% endif %}
+<div class="grid" style="grid-template-columns:320px 1fr">
+  <div class="card">
+    <div class="upper">Índice de adopción</div>
+    <div class="score" style="margin:10px 0 4px">{{ res.puntaje if res.puntaje is not none else '-' }}<span style="font-size:20px" class="muted">/100</span></div>
+    <div class="small muted">Media de las ponderaciones de los factores relevantes, pesada por su importancia relativa.</div>
+    <hr style="border:0;border-top:1px solid var(--borde);margin:14px 0">
+    {% for dname, val in res.dimensiones.items() %}
+      <div class="acciones" style="justify-content:space-between"><span class="chip dim-{{ dname }}">{{ dname }}</span><span class="mono">{{ val if val is not none else '-' }}/100</span></div>
+      <div class="bar" style="margin:6px 0 12px"><i style="width:{{ val or 0 }}%"></i></div>
+    {% endfor %}
+    <div class="foda-grid" style="margin-top:6px">
+      <div class="fq-F"><div class="upper">Fortalezas</div><div class="score" style="font-size:26px">{{ res.conteo.Fortaleza }}</div></div>
+      <div class="fq-O"><div class="upper">Oportunidades</div><div class="score" style="font-size:26px">{{ res.conteo.Oportunidad }}</div></div>
+      <div class="fq-D"><div class="upper">Debilidades</div><div class="score" style="font-size:26px">{{ res.conteo.Debilidad }}</div></div>
+      <div class="fq-A"><div class="upper">Amenazas</div><div class="score" style="font-size:26px">{{ res.conteo.Amenaza }}</div></div>
+    </div>
+  </div>
+  <div>
+    {% set r = res.recomendacion %}
+    {% if r %}
+    <div class="reco {{ r.tipo }}" style="margin-bottom:18px">
+      <div class="upper">Recomendación del sistema</div>
+      <h2>Recomendación {{ r.tipo }}: {{ r.titulo }}</h2>
+      <p style="margin:0 0 10px">{{ r.texto }}</p>
+      {% for c in r.causas %}
+        <div style="background:rgba(255,255,255,.65);border-radius:8px;padding:10px 12px;margin-bottom:8px">
+          <b>{{ c.factor }}</b> <span class="chip {{ c.foda }}">{{ c.foda }}</span> <span class="small">IR {{ c.ir }} · PM {{ c.pm|num }}</span>
+          {% if c.subfactores %}<div class="small" style="margin-top:4px">No cumplen o cumplen parcialmente: {{ c.subfactores|join('; ') }}.</div>{% endif %}
+          <div class="small" style="margin-top:4px"><b>Acción sugerida:</b> {{ c.accion }}.</div>
+        </div>
+      {% endfor %}
+      {% if r.fortalezas %}<div class="small"><b>A favor de la adopción:</b> {{ r.fortalezas|join(', ') }}.</div>{% endif %}
+    </div>
+    {% else %}<div class="card empty">El resultado aparecerá cuando haya factores relevantes con subfactores evaluados.</div>{% endif %}
+    <div class="card" style="padding:0">
+      <table class="t">
+        <tr><th>Factor</th><th>Dimensión</th><th>IS</th><th>ID</th><th>IR</th><th>Alcance</th><th>PM</th><th>FODA</th><th></th></tr>
+        {% for f in res.factores %}
+        <tr class="{{ '' if f.relevante else 'off' }}">
+          <td><b>{{ f.nombre }}</b>{% if f.desacuerdo_id %} <span class="chip warn">desacuerdo</span>{% endif %}</td>
+          <td><span class="chip dim-{{ f.dimension }}">{{ f.dimension }}</span></td>
+          <td class="mono">{{ f.is_valor }}</td><td class="mono">{{ f.id or '-' }}</td>
+          <td>{{ NIVELES[f.ir] if f.ir else '-' }}</td><td>{{ f.alcance }}</td>
+          <td class="mono">{{ f.pm|num }}</td>
+          <td>{% if f.foda %}<span class="chip {{ f.foda }}">{{ f.foda }}</span>{% elif not f.relevante and f.ir %}<span class="muted small">No relevante</span>{% else %}<span class="muted small">Sin evaluar</span>{% endif %}</td>
+          <td><button type="button" class="btn sm" onclick="toggleCalc('{{ f.key }}')">¿Por qué?</button></td>
+        </tr>
+        <tr id="calc-{{ f.key }}" style="display:none"><td colspan="9"><div class="calc"><b>Cómo se obtuvo:</b><ul>{% for l in f.explicacion %}<li>{{ l }}</li>{% endfor %}</ul></div></td></tr>
+        {% endfor %}
+      </table>
+    </div>
+  </div>
+</div>
+{% if sens %}
+<div class="card" id="sensibilidad">
+  <h2>Análisis de sensibilidad</h2>
+  <p class="small muted" style="margin-top:-6px">¿Qué tendría que cambiar para que la recomendación sea otra? El sistema simula cada respuesta posible de cada subfactor evaluado y recalcula la guía completa.</p>
+  <div class="grid g2" style="gap:16px">
+    <div>
+      <div class="upper">Camino mínimo para mejorar</div>
+      {% if sens.base == 'A' %}<p>La recomendación ya es A.</p>
+      {% else %}
+        <ul class="sens">
+        {% if sens.ruta_criticos_resultado and sens.ruta_criticos_resultado != sens.base %}<li>Llevando a «Cumple» <b>{{ sens.ruta_criticos_total }}</b> subfactor(es) de los factores críticos, la recomendación pasa de <b>{{ sens.base }}</b> a <b>{{ sens.ruta_criticos_resultado }}</b>.</li>{% endif %}
+        {% if sens.ruta_resultado != sens.base %}<li>Llevando a «Cumple» <b>{{ sens.ruta_total }}</b> subfactor(es) de todos los factores negativos, la recomendación pasa a <b>{{ sens.ruta_resultado }}</b>.</li>{% endif %}
+        </ul>
+        {% for r in sens.ruta %}<details><summary><b>{{ r.factor }}</b> <span class="chip {{ r.foda }}">{{ r.foda }}</span>{% if r.critico %} <span class="chip mal">crítico</span>{% endif %} <span class="small">PM {{ r.pm|num }} · {{ r.subfactores|length }} subfactor(es)</span></summary>
+          <ol class="small">{% for t in r.subfactores %}<li>{{ t }}</li>{% endfor %}</ol></details>{% endfor %}
+      {% endif %}
+      {% if sens.mejoras %}<div class="upper" style="margin-top:12px">Una sola respuesta que mejora la recomendación</div>
+      <ul class="sens small">{% for x in sens.mejoras %}<li><b>{{ x.factor }}</b>: «{{ x.subfactor }}» de {{ x.desde|num(1) }} a {{ x.hasta }} → recomendación <b>{{ x.nueva }}</b></li>{% endfor %}</ul>{% endif %}
+    </div>
+    <div>
+      <div class="upper">Riesgos: una sola respuesta que empeora la recomendación</div>
+      {% if sens.riesgos %}<ul class="sens small">{% for x in sens.riesgos %}<li><b>{{ x.factor }}</b>: «{{ x.subfactor }}» de {{ x.desde|num(1) }} a {{ x.hasta }} → recomendación <b>{{ x.nueva }}</b></li>{% endfor %}</ul>
+      {% else %}<p class="small">Ninguna respuesta individual empeora la recomendación: el resultado es estable.</p>{% endif %}
+      <div class="upper" style="margin-top:12px">Factores cerca del umbral ({{ umbral|num(1) }})</div>
+      {% if sens.cercanos %}<ul class="sens small">{% for c in sens.cercanos %}<li><b>{{ c.factor }}</b> PM {{ c.pm|num }} ({{ c.foda }}){% if c.puntos > 0 %}: le faltan {{ c.puntos|num(1) }} punto(s) para llegar al umbral{% else %}: está {{ (-c.puntos)|num(1) }} punto(s) sobre el umbral{% endif %}</li>{% endfor %}</ul>
+      {% else %}<p class="small">Ningún factor está a menos de 0,5 del umbral.</p>{% endif %}
+    </div>
+  </div>
+</div>
+{% endif %}
+{% if riesgos and riesgos.riesgos %}
+<div class="card" id="riesgos">
+  <h2>Matriz de riesgos de la adopción</h2>
+  <p class="small muted" style="margin-top:-6px">Cada Debilidad o Amenaza se convierte en un riesgo. Probabilidad (1-5) según qué tan lejos está la PM del umbral; impacto (1-5) según la importancia relativa del factor. Nivel = P × I.</p>
+  <div class="grid" style="gap:18px;align-items:start;grid-template-columns:380px 1fr">
+    <div>
+      <table class="heat">
+        {% for p in [5,4,3,2,1] %}<tr><th class="small">{{ p }}</th>
+          {% for i in [1,2,3,4,5] %}{% set v = p*i %}<td class="{{ 'alto' if v >= 15 else 'medio' if v >= 8 else 'bajo' }}" title="P={{ p }} · I={{ i }} · {{ v }}">{% for f in riesgos.celdas.get((p, i), []) %}<span class="punto" title="{{ f }}">{{ f[:3] }}</span>{% endfor %}</td>{% endfor %}</tr>{% endfor %}
+        <tr><th></th>{% for i in [1,2,3,4,5] %}<th class="small">{{ i }}</th>{% endfor %}</tr>
+      </table>
+      <div class="small muted" style="text-align:center">Impacto →   ·   ↑ Probabilidad</div>
+      <div class="acciones small" style="justify-content:center;margin-top:6px"><span class="chip mal">Alto {{ riesgos.conteo.Alto }}</span><span class="chip warn">Medio {{ riesgos.conteo.Medio }}</span><span class="chip ok">Bajo {{ riesgos.conteo.Bajo }}</span></div>
+    </div>
+    <table class="t small"><tr><th>Riesgo</th><th>P×I</th><th>Respuesta</th><th>Acción</th></tr>
+    {% for r in riesgos.riesgos %}<tr><td><b>{{ r.factor }}</b><div class="muted">{{ r.foda }} · PM {{ r.pm|num }}</div></td>
+      <td><span class="chip {{ 'mal' if r.nivel=='Alto' else 'warn' if r.nivel=='Medio' else 'ok' }}">{{ r.nivel }} {{ r.valor }}</span></td>
+      <td>{{ r.respuesta }}</td><td>{{ r.accion }}{% if r.evidencia %}<div class="muted" title="{{ r.evidencia|join('; ') }}">Evidencia: {{ r.evidencia[0] }}{% if r.evidencia|length > 1 %} (+{{ r.evidencia|length - 1 }}){% endif %}</div>{% endif %}</td></tr>{% endfor %}
+    </table>
+  </div>
+</div>
+{% endif %}
+{% if res.recomendacion %}
+<div class="card" id="resumen">
+  <div class="acciones" style="justify-content:space-between">
+    <h2 style="margin:0">Resumen ejecutivo y plan de acción</h2>
+    <form method="post" action="{{ url_for('ia_resumen', eid=ev.id) }}" onsubmit="this.querySelector('button').textContent='Generando...';this.querySelector('button').disabled=true"><button class="btn pri">✦ {{ 'Regenerar' if resumen else 'Generar' }} {{ 'con IA' if ia_activa else 'con el motor de reglas' }}</button></form>
+  </div>
+  {% if resumen %}
+    <div class="acciones small" style="margin:8px 0">
+      <span class="chip ia">{{ resumen.fuente }}{% if resumen.modelo %} · {{ resumen.modelo }}{% endif %}</span><span class="chip">{{ resumen.fecha }}</span>
+      {% if resumen.editado %}<span class="chip">editado por el usuario</span>{% endif %}
+      {% if resumen.coherente %}<span class="chip ok">✓ coherente con la recomendación {{ res.recomendacion.tipo }}</span>{% else %}<span class="chip mal">⚠ menciona otra recomendación: revisar</span>{% endif %}
+      {% if resumen.tipo != res.recomendacion.tipo %}<span class="chip warn">la recomendación cambió desde que se generó</span>{% endif %}
+    </div>
+    <form method="post" action="{{ url_for('resumen_guardar', eid=ev.id) }}">
+      <textarea name="resumen" rows="6" class="resumen-ia">{{ resumen.resumen }}</textarea>
+      <div class="acciones" style="margin-top:8px"><button class="btn sm">Guardar cambios</button><button class="btn sm mal" name="eliminar" value="1">Eliminar</button><span class="small muted">El texto lo redacta la IA a partir del cálculo; la recomendación no cambia.</span></div>
+    </form>
+    {% if resumen.plan %}
+    <table class="t" style="margin-top:12px"><tr><th>Factor</th><th>Acción</th><th>Entregable</th><th>Plazo</th><th>Responsable</th></tr>
+    {% for p in resumen.plan %}<tr><td><b>{{ p.factor }}</b></td><td>{{ p.accion }}</td><td class="small">{{ p.entregable }}</td><td class="small">{{ p.plazo }}</td><td class="small">{{ p.responsable }}</td></tr>{% endfor %}</table>
+    {% endif %}
+  {% else %}<p class="small muted">Genera un resumen ejecutivo para el comité y un plan de acción con entregables y plazos. Si no hay IA disponible, lo redacta el motor de reglas de GUIOS.</p>{% endif %}
+</div>
+{% endif %}
+<div class="card">
+  <h2>Decisión humana</h2>
+  <div class="sep3" style="margin-bottom:14px">
+    <div><b>Dato observado</b><br><span class="small">Respuestas, comentarios y evidencias de los decisores (pasos 2 y 3).</span></div>
+    <div><b>Cálculo</b><br><span class="small">IR por la Figura 5.10, PM por media y FODA con umbral {{ umbral|num(1) }}.</span></div>
+    <div><b>Decisión</b><br><span class="small">Estado: <span class="chip {{ ev.decision }}">{{ DECISIONES[ev.decision] }}</span>{% if decisor %} por {{ decisor }} el {{ ev.decision_fecha }}{% endif %}</span></div>
+  </div>
+  {% if ev.decision_comentario %}<div class="alert info"><b>Comentario del revisor:</b> {{ ev.decision_comentario }}</div>{% endif %}
+  {% if ev.estado in ['borrador','en_curso'] and es_lider %}
+    <form method="post" action="{{ url_for('enviar_revision', eid=ev.id) }}" class="acciones"><button class="btn pri">Enviar a revisión</button><span class="small muted">El sistema valida que no falten importancias ni subfactores (RF-07).</span></form>
+  {% elif ev.estado == 'en_revision' and es_revisor %}
+    <form method="post" action="{{ url_for('decision', eid=ev.id) }}">
+      <div class="grid" style="grid-template-columns:260px 1fr;gap:14px">
+        <div class="field"><label>Decisión del revisor <span class="req">*</span></label>
+          <select name="decision" required><option value="">Selecciona...</option><option value="aprobada">Aprobada</option><option value="condicionada">Condicionada</option><option value="devuelta">Devuelta (corregir)</option><option value="rechazada">Rechazada</option></select></div>
+        <div class="field"><label>Comentario justificativo (obligatorio) <span class="req">*</span></label><textarea name="comentario" maxlength="500" required placeholder="Explica el motivo de la decisión"></textarea></div>
+      </div>
+      <div class="acciones"><button class="btn ok">Registrar decisión y cerrar</button><span class="small muted">Al cerrar, la evaluación queda inmutable; solo podrá reabrirse como revisión nueva (RF-15).</span></div>
+    </form>
+  {% elif ev.estado == 'en_revision' %}<p class="muted">La evaluación espera la decisión del revisor.</p>
+  {% elif ev.estado == 'cerrada' %}<p class="muted">Evaluación cerrada el {{ ev.cerrado }}. La original permanece inmutable.</p>{% endif %}
+</div>
+{% endblock %}
+{% block scripts %}<script>function toggleCalc(k){var r=document.getElementById('calc-'+k);r.style.display=r.style.display==='none'?'':'none';}</script>{% endblock %}

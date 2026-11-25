@@ -1,0 +1,9 @@
+{% extends 'publico.html' %}{% block title %}Cuenta pendiente{% endblock %}
+{% block caja %}
+<div class="upper">Cuenta registrada</div>
+<h1 style="margin:6px 0 4px">Tu cuenta espera aprobación</h1>
+<p class="muted">Hola, <b>{{ g.user.nombre }}</b>. Tu correo <b>{{ g.user.correo }}</b> ya está verificado. El administrador revisará tu solicitud y te asignará un rol; recibirás un aviso por correo.</p>
+<div class="alert info">Rol solicitado: <b>{{ ROLES.get(g.user.rol_solicitado, 'sin indicar') }}</b></div>
+<p class="small muted">Mientras tanto no puedes ver evaluaciones ni datos de la organización.</p>
+<a class="btn" style="width:100%;justify-content:center" href="{{ url_for('salir') }}">Cerrar sesión</a>
+{% endblock %}

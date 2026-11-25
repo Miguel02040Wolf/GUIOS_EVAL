@@ -1,0 +1,13 @@
+{% extends 'publico.html' %}{% block title %}Verificar correo{% endblock %}
+{% block caja %}
+<form method="post">
+  <div class="upper">Verificación</div>
+  <h1 style="margin:6px 0 4px">Verifica tu correo</h1>
+  <p class="muted" style="margin-top:0">Escribe el código de 6 dígitos que enviamos a tu correo. Vence en 15 minutos.</p>
+  <div class="field"><label>Correo electrónico</label><input type="email" name="correo" value="{{ correo or '' }}" required></div>
+  <div class="field"><label>Código</label><input type="text" name="codigo" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" class="codigo" placeholder="000000" autocomplete="one-time-code" autofocus></div>
+  <button class="btn pri" style="width:100%;justify-content:center;padding:11px" name="accion" value="verificar">Verificar</button>
+  <button class="btn" style="width:100%;justify-content:center;margin-top:8px" name="accion" value="reenviar" formnovalidate>Reenviar código</button>
+  <p class="small" style="text-align:center;margin-top:12px"><a href="{{ url_for('login') }}">Volver a iniciar sesión</a></p>
+</form>
+{% endblock %}

@@ -1,0 +1,678 @@
+{
+ "fecha": "25/11/2026",
+ "desde": 2020,
+ "hasta": 2025,
+ "corpus": 336,
+ "conteos": {
+  "Actitud hacia el cambio": 4,
+  "Apoyo de la alta dirección": 5,
+  "Bloqueo de proveedores": 6,
+  "Casos de estudio de adopción FLOSS": 39,
+  "Centralidad de la tecnología de la información": 3,
+  "Compatibilidad": 27,
+  "Coste total de propiedad": 8,
+  "Documentación": 22,
+  "Fiabilidad": 44,
+  "Formación": 52,
+  "Mantenibilidad": 58,
+  "Personalización": 30,
+  "Portabilidad": 18,
+  "Prueba": 16,
+  "Reusabilidad": 16,
+  "Seguridad de la información": 79,
+  "Soporte": 19,
+  "Tiempo de adopción": 0,
+  "Usabilidad": 36
+ },
+ "top": {
+  "Compatibilidad": [
+   [
+    "Mitigating Persistence of Open-Source Vulnerabilities in Maven Ecosystem",
+    2023,
+    56,
+    "https://doi.org/10.1109/ase56229.2023.00058"
+   ],
+   [
+    "Analyzing the Essential Attributes of Nationally Issued COVID-19 Contact Tracing Apps: Open-Source Intelligence Approach",
+    2021,
+    29,
+    "https://doi.org/10.2196/27232"
+   ],
+   [
+    "Factors Affecting Intention to Adopt Open Source ERP Systems by SMEs in Yemen",
+    2021,
+    11,
+    "https://doi.org/10.1109/itss-ioe53029.2021.9615254"
+   ],
+   [
+    "ADOPTION OF KOHA OPEN SOURCE INTEGRATED LIBRARY MANAGEMENT SYSTEM: A REVIEW OF LITERATURE",
+    2020,
+    8,
+    null
+   ],
+   [
+    "Building an open-source collaborative platform for migration research: A metadata modeling approach using XML",
+    2024,
+    6,
+    "https://doi.org/10.1016/j.knosys.2024.111823"
+   ],
+   [
+    "Building Digital Repositories with the Open- Source Software Invenio: Use of SaaS Model Zenodo",
+    2022,
+    5,
+    "https://doi.org/10.5281/zenodo.7123705"
+   ]
+  ],
+  "Fiabilidad": [
+   [
+    "Measuring the Impact of Early-2025 AI on Experienced Open-Source Developer Productivity",
+    2025,
+    457,
+    "https://doi.org/10.48550/arxiv.2507.09089"
+   ],
+   [
+    "On the Tool Manipulation Capability of Open-source Large Language Models",
+    2023,
+    249,
+    "https://doi.org/10.48550/arxiv.2305.16504"
+   ],
+   [
+    "An empirical study on vulnerability disclosure management of open source software systems",
+    2025,
+    34,
+    "https://doi.org/10.1145/3716822"
+   ],
+   [
+    "FoBSim: an extensible open-source simulation tool for integrated fog-blockchain systems",
+    2021,
+    25,
+    "https://doi.org/10.7717/peerj-cs.431"
+   ],
+   [
+    "Acceptance of open source geospatial software: Assessing QGIS in South Africa with the UTAUT2 model",
+    2020,
+    19,
+    "https://doi.org/10.1111/tgis.12697"
+   ],
+   [
+    "Open source map matching with Markov decision processes: A new method and a detailed benchmark with existing approaches",
+    2023,
+    16,
+    "https://doi.org/10.1111/tgis.13107"
+   ]
+  ],
+  "Mantenibilidad": [
+   [
+    "A versatile dataset of agile open source software projects",
+    2022,
+    69,
+    "https://doi.org/10.1145/3524842.3528029"
+   ],
+   [
+    "Ten simple rules on writing clean and reliable open-source scientific software",
+    2021,
+    67,
+    "https://doi.org/10.1371/journal.pcbi.1009481"
+   ],
+   [
+    "Enterprise-Driven Open Source Software: A Case Study on Security Automation",
+    2021,
+    44,
+    "https://doi.org/10.1109/icse-seip52600.2021.00037"
+   ],
+   [
+    "Understanding and Remediating Open-Source License Incompatibilities in the PyPI Ecosystem",
+    2023,
+    39,
+    "https://doi.org/10.1109/ase56229.2023.00175"
+   ],
+   [
+    "Identifying Affected Libraries and Their Ecosystems for Open Source Software Vulnerabilities",
+    2024,
+    35,
+    "https://doi.org/10.1145/3597503.3639582"
+   ],
+   [
+    "Mutation Testing in Practice: Insights From Open-Source Software Developers",
+    2024,
+    28,
+    "https://doi.org/10.1109/tse.2024.3377378"
+   ]
+  ],
+  "Personalización": [
+   [
+    "A Derivation of Factors Influencing the Diffusion and Adoption of an Open Source Learning Platform",
+    2020,
+    58,
+    "https://doi.org/10.3390/su12187532"
+   ],
+   [
+    "Splink: Free software for probabilistic record linkage at scale.",
+    2022,
+    51,
+    "https://doi.org/10.23889/ijpds.v7i3.1794"
+   ],
+   [
+    "Mutation Testing in Practice: Insights From Open-Source Software Developers",
+    2024,
+    28,
+    "https://doi.org/10.1109/tse.2024.3377378"
+   ],
+   [
+    "Open-source software product line extraction processes: the ArgoUML-SPL and Phaser cases",
+    2022,
+    17,
+    "https://doi.org/10.1007/s10664-021-10104-3"
+   ],
+   [
+    "PsyBuilder: An Open-Source, Cross-Platform Graphical Experiment Builder for Psychtoolbox With Built-In Performance Optim",
+    2022,
+    14,
+    "https://doi.org/10.1177/25152459211070573"
+   ],
+   [
+    "Sustainable library services with open-source library automation and digitisation software: A literature review",
+    2024,
+    13,
+    "https://doi.org/10.1177/02663821241245509"
+   ]
+  ],
+  "Prueba": [
+   [
+    "Measuring the Impact of Early-2025 AI on Experienced Open-Source Developer Productivity",
+    2025,
+    457,
+    "https://doi.org/10.48550/arxiv.2507.09089"
+   ],
+   [
+    "A Derivation of Factors Influencing the Diffusion and Adoption of an Open Source Learning Platform",
+    2020,
+    58,
+    "https://doi.org/10.3390/su12187532"
+   ],
+   [
+    "Mutation Testing in Practice: Insights From Open-Source Software Developers",
+    2024,
+    28,
+    "https://doi.org/10.1109/tse.2024.3377378"
+   ],
+   [
+    "Ecology and conservation researchers should adopt open source technologies",
+    2024,
+    11,
+    "https://doi.org/10.3389/fcosc.2024.1364181"
+   ],
+   [
+    "Factors Affecting Intention to Adopt Open Source ERP Systems by SMEs in Yemen",
+    2021,
+    11,
+    "https://doi.org/10.1109/itss-ioe53029.2021.9615254"
+   ],
+   [
+    "A Systematic Review and Performance Evaluation of Open-Source Tools for Smart Contract Vulnerability Detection",
+    2024,
+    5,
+    "https://doi.org/10.32604/cmc.2024.052887"
+   ]
+  ],
+  "Documentación": [
+   [
+    "PeaTMOSS: A Dataset and Initial Analysis of Pre-Trained Models in Open-Source Software",
+    2024,
+    52,
+    "https://doi.org/10.1145/3643991.3644907"
+   ],
+   [
+    "Splink: Free software for probabilistic record linkage at scale.",
+    2022,
+    51,
+    "https://doi.org/10.23889/ijpds.v7i3.1794"
+   ],
+   [
+    "PsyBuilder: An Open-Source, Cross-Platform Graphical Experiment Builder for Psychtoolbox With Built-In Performance Optim",
+    2022,
+    14,
+    "https://doi.org/10.1177/25152459211070573"
+   ],
+   [
+    "Sustainable library services with open-source library automation and digitisation software: A literature review",
+    2024,
+    13,
+    "https://doi.org/10.1177/02663821241245509"
+   ],
+   [
+    "Architectural Views: The State of Practice in Open-Source Software Projects",
+    2024,
+    12,
+    "https://doi.org/10.1007/978-3-031-70797-1_27"
+   ],
+   [
+    "Constructive Alignment in Modern Computing Education: An Open-Source Computer-Based Examination System",
+    2023,
+    12,
+    "https://doi.org/10.1145/3631802.3631818"
+   ]
+  ],
+  "Portabilidad": [
+   [
+    "Test automation in open-source Android apps: a large-scale empirical study",
+    2020,
+    51,
+    "https://doi.org/10.1145/3324884.3416623"
+   ],
+   [
+    "PsyBuilder: An Open-Source, Cross-Platform Graphical Experiment Builder for Psychtoolbox With Built-In Performance Optim",
+    2022,
+    14,
+    "https://doi.org/10.1177/25152459211070573"
+   ],
+   [
+    "Why android app testing falls short: empirical insights from open-source projects and a practitioner survey",
+    2025,
+    11,
+    "https://doi.org/10.1007/s10664-025-10726-x"
+   ],
+   [
+    "Adoption of third-party libraries in mobile apps: a case study on open-source Android applications",
+    2022,
+    9,
+    "https://doi.org/10.1145/3524613.3527810"
+   ],
+   [
+    "An open-source digital contact tracing system tailored to haulage",
+    2023,
+    5,
+    "https://doi.org/10.3389/fdgth.2023.1199635"
+   ],
+   [
+    "Navigating Open-Source Serverless Frameworks: An Empirical Analysis of Issues and Their Underlying Causes",
+    2024,
+    3,
+    "https://doi.org/10.2139/ssrn.5023362"
+   ]
+  ],
+  "Reusabilidad": [
+   [
+    "PeaTMOSS: A Dataset and Initial Analysis of Pre-Trained Models in Open-Source Software",
+    2024,
+    52,
+    "https://doi.org/10.1145/3643991.3644907"
+   ],
+   [
+    "Understanding and Remediating Open-Source License Incompatibilities in the PyPI Ecosystem",
+    2023,
+    39,
+    "https://doi.org/10.1109/ase56229.2023.00175"
+   ],
+   [
+    "The uphill journey of FaaS in the open-source community",
+    2022,
+    21,
+    "https://doi.org/10.1016/j.jss.2022.111589"
+   ],
+   [
+    "An Empirical Study on Reproducible Packaging in Open-Source Ecosystems",
+    2025,
+    20,
+    "https://doi.org/10.1109/icse55347.2025.00136"
+   ],
+   [
+    "Building an open-source collaborative platform for migration research: A metadata modeling approach using XML",
+    2024,
+    6,
+    "https://doi.org/10.1016/j.knosys.2024.111823"
+   ],
+   [
+    "Perceptions on the adoption of Free/Open Source Software policies by a Scientific Institution: The case study of the NIH",
+    2025,
+    3,
+    "https://doi.org/10.5206/mt.v5i3.22904"
+   ]
+  ],
+  "Usabilidad": [
+   [
+    "A versatile dataset of agile open source software projects",
+    2022,
+    69,
+    "https://doi.org/10.1145/3524842.3528029"
+   ],
+   [
+    "Ten simple rules on writing clean and reliable open-source scientific software",
+    2021,
+    67,
+    "https://doi.org/10.1371/journal.pcbi.1009481"
+   ],
+   [
+    "A Derivation of Factors Influencing the Diffusion and Adoption of an Open Source Learning Platform",
+    2020,
+    58,
+    "https://doi.org/10.3390/su12187532"
+   ],
+   [
+    "Splink: Free software for probabilistic record linkage at scale.",
+    2022,
+    51,
+    "https://doi.org/10.23889/ijpds.v7i3.1794"
+   ],
+   [
+    "Mutation Testing in Practice: Insights From Open-Source Software Developers",
+    2024,
+    28,
+    "https://doi.org/10.1109/tse.2024.3377378"
+   ],
+   [
+    "Future Trends of Open-Source AI in Libraries: Implications for Librarianship and Service Delivery",
+    2024,
+    25,
+    "https://doi.org/10.70112/ajist-2024.14.2.4283"
+   ]
+  ],
+  "Apoyo de la alta dirección": [
+   [
+    "Factors Affecting Intention to Adopt Open Source ERP Systems by SMEs in Yemen",
+    2021,
+    11,
+    "https://doi.org/10.1109/itss-ioe53029.2021.9615254"
+   ],
+   [
+    "The Influence of Leadership and Institutions on the Success of Open-Source ERP Implementation",
+    2024,
+    2,
+    "https://doi.org/10.1109/isct62336.2024.10791208"
+   ],
+   [
+    "Bridge2Hyku: Meeting Practitioners’ Needs in Digital Collection Migration to Open Source Samvera Repository",
+    2020,
+    2,
+    "https://doi.org/10.3390/publications8020022"
+   ],
+   [
+    "A Model for Adoption of Open-Source Cloud Computing: Platform as a Service and Software as a Service",
+    2024,
+    1,
+    "https://doi.org/10.7753/ijcatr1305.1007"
+   ],
+   [
+    "A framework for adoption intention of open source enterprise resource planning systems by small and medium size enterpri",
+    2021,
+    0,
+    null
+   ]
+  ],
+  "Formación": [
+   [
+    "On the Tool Manipulation Capability of Open-source Large Language Models",
+    2023,
+    249,
+    "https://doi.org/10.48550/arxiv.2305.16504"
+   ],
+   [
+    "Ten simple rules on writing clean and reliable open-source scientific software",
+    2021,
+    67,
+    "https://doi.org/10.1371/journal.pcbi.1009481"
+   ],
+   [
+    "PeaTMOSS: A Dataset and Initial Analysis of Pre-Trained Models in Open-Source Software",
+    2024,
+    52,
+    "https://doi.org/10.1145/3643991.3644907"
+   ],
+   [
+    "Future Trends of Open-Source AI in Libraries: Implications for Librarianship and Service Delivery",
+    2024,
+    25,
+    "https://doi.org/10.70112/ajist-2024.14.2.4283"
+   ],
+   [
+    "Open source software adoption for development of institutional repositories in university libraries of Islamabad",
+    2022,
+    23,
+    "https://doi.org/10.1108/idd-10-2021-0113"
+   ],
+   [
+    "Leading successful government-academia collaborations using FLOSS and agile values",
+    2020,
+    20,
+    "https://doi.org/10.1016/j.jss.2020.110548"
+   ]
+  ],
+  "Soporte": [
+   [
+    "Sustainable library services with open-source library automation and digitisation software: A literature review",
+    2024,
+    13,
+    "https://doi.org/10.1177/02663821241245509"
+   ],
+   [
+    "Exploring the open-source impact on Bangladesh academic library service sustainability",
+    2024,
+    12,
+    "https://doi.org/10.1108/jices-06-2024-0080"
+   ],
+   [
+    "Ecology and conservation researchers should adopt open source technologies",
+    2024,
+    11,
+    "https://doi.org/10.3389/fcosc.2024.1364181"
+   ],
+   [
+    "Open-Source and Proprietary Library Automation Software: A Comparative Academic Librarian's Perspective",
+    2022,
+    11,
+    "https://doi.org/10.52461/jimp.v2i2.1407"
+   ],
+   [
+    "Factors Affecting Intention to Adopt Open Source ERP Systems by SMEs in Yemen",
+    2021,
+    11,
+    "https://doi.org/10.1109/itss-ioe53029.2021.9615254"
+   ],
+   [
+    "A Comparison of Open-Source Learning Management Systems Used for Distance Education in Higher Education Institutions",
+    2024,
+    9,
+    "https://doi.org/10.47897/bilmes.1597768"
+   ]
+  ],
+  "Actitud hacia el cambio": [
+   [
+    "A Derivation of Factors Influencing the Diffusion and Adoption of an Open Source Learning Platform",
+    2020,
+    58,
+    "https://doi.org/10.3390/su12187532"
+   ],
+   [
+    "Open source software adoption for development of institutional repositories in university libraries of Islamabad",
+    2022,
+    23,
+    "https://doi.org/10.1108/idd-10-2021-0113"
+   ],
+   [
+    "Exploring the open-source impact on Bangladesh academic library service sustainability",
+    2024,
+    12,
+    "https://doi.org/10.1108/jices-06-2024-0080"
+   ],
+   [
+    "Iraqi’s Organizations Awareness to Prompt Open Source Cloud Computing (OSCC) in Their Service: A Study",
+    2020,
+    7,
+    "https://doi.org/10.1007/978-981-15-2693-0_22"
+   ]
+  ],
+  "Bloqueo de proveedores": [
+   [
+    "OpenEOcubes: an open-source and lightweight R-based RESTful web service for analyzing earth observation data cubes",
+    2024,
+    14,
+    "https://doi.org/10.1007/s12145-024-01249-y"
+   ],
+   [
+    "Ecology and conservation researchers should adopt open source technologies",
+    2024,
+    11,
+    "https://doi.org/10.3389/fcosc.2024.1364181"
+   ],
+   [
+    "Migrating from Oracle to PostgreSQL: Leveraging Open-Source to Reduce Database Costs and Enhance Flexibility",
+    2023,
+    8,
+    "https://doi.org/10.58812/esiscs.v1i02.433"
+   ],
+   [
+    "A systematic literature review on open-source software on library service sustainability in Bangladesh university librar",
+    2025,
+    2,
+    "https://doi.org/10.1108/jices-01-2025-0024"
+   ],
+   [
+    "The Role of Open Source in the Future of Cloud Infrastructure",
+    2025,
+    1,
+    "https://doi.org/10.48175/ijarsct-24652"
+   ],
+   [
+    "Transitioning from Informatica PowerCenter to Open-Source Data Pipelines",
+    2025,
+    0,
+    "https://doi.org/10.38124/ijsrmt.v4i7.984"
+   ]
+  ],
+  "Casos de estudio de adopción FLOSS": [
+   [
+    "On the adoption of static analysis for software security assessment–A case study of an open-source e-government project",
+    2021,
+    55,
+    "https://doi.org/10.1016/j.cose.2021.102470"
+   ],
+   [
+    "Enterprise-Driven Open Source Software: A Case Study on Security Automation",
+    2021,
+    44,
+    "https://doi.org/10.1109/icse-seip52600.2021.00037"
+   ],
+   [
+    "FoBSim: an extensible open-source simulation tool for integrated fog-blockchain systems",
+    2021,
+    25,
+    "https://doi.org/10.7717/peerj-cs.431"
+   ],
+   [
+    "Leading successful government-academia collaborations using FLOSS and agile values",
+    2020,
+    20,
+    "https://doi.org/10.1016/j.jss.2020.110548"
+   ],
+   [
+    "Open-source software product line extraction processes: the ArgoUML-SPL and Phaser cases",
+    2022,
+    17,
+    "https://doi.org/10.1007/s10664-021-10104-3"
+   ],
+   [
+    "Perceptions of Academic Librarians Toward Open Source Library System (OSLS): Case Study of Pakistan",
+    2024,
+    15,
+    "https://doi.org/10.1080/0194262x.2023.2286649"
+   ]
+  ],
+  "Centralidad de la tecnología de la información": [
+   [
+    "How can FLOSS Support COBIT 2019? Coverage Analysis and a Conceptual Framework",
+    2023,
+    24,
+    "https://doi.org/10.1016/j.procs.2023.01.339"
+   ],
+   [
+    "A Comparison of Open-Source Learning Management Systems Used for Distance Education in Higher Education Institutions",
+    2024,
+    9,
+    "https://doi.org/10.47897/bilmes.1597768"
+   ],
+   [
+    "Open Source Software KOHA with Special Reference to Agricultural Libraries of ICAR",
+    2025,
+    0,
+    "https://doi.org/10.65041/biologicalforum.2025.17.5.8"
+   ]
+  ],
+  "Tiempo de adopción": [],
+  "Coste total de propiedad": [
+   [
+    "Exploring the open-source impact on Bangladesh academic library service sustainability",
+    2024,
+    12,
+    "https://doi.org/10.1108/jices-06-2024-0080"
+   ],
+   [
+    "Ecology and conservation researchers should adopt open source technologies",
+    2024,
+    11,
+    "https://doi.org/10.3389/fcosc.2024.1364181"
+   ],
+   [
+    "Factors Affecting Intention to Adopt Open Source ERP Systems by SMEs in Yemen",
+    2021,
+    11,
+    "https://doi.org/10.1109/itss-ioe53029.2021.9615254"
+   ],
+   [
+    "Migrating from Oracle to PostgreSQL: Leveraging Open-Source to Reduce Database Costs and Enhance Flexibility",
+    2023,
+    8,
+    "https://doi.org/10.58812/esiscs.v1i02.433"
+   ],
+   [
+    "6 Features, Key Challenges, and Applications of Open-Source Data Fabric Platforms",
+    2023,
+    3,
+    "https://doi.org/10.1515/9783111000886-006"
+   ],
+   [
+    "The Role of Open Source in the Future of Cloud Infrastructure",
+    2025,
+    1,
+    "https://doi.org/10.48175/ijarsct-24652"
+   ]
+  ],
+  "Seguridad de la información": [
+   [
+    "On the Tool Manipulation Capability of Open-source Large Language Models",
+    2023,
+    249,
+    "https://doi.org/10.48550/arxiv.2305.16504"
+   ],
+   [
+    "uPort Open-Source Identity Management System: An Assessment of Self-Sovereign Identity and User-Centric Data Platform Bu",
+    2020,
+    162,
+    "https://doi.org/10.1109/isse49799.2020.9272223"
+   ],
+   [
+    "Modeling continuous security: A conceptual model for automated DevSecOps using open-source software over cloud (ADOC)",
+    2020,
+    145,
+    "https://doi.org/10.1016/j.cose.2020.101967"
+   ],
+   [
+    "It’s like flossing your teeth: On the Importance and Challenges of Reproducible Builds for Software Supply Chain Securit",
+    2023,
+    71,
+    "https://doi.org/10.1109/sp46215.2023.10179320"
+   ],
+   [
+    "Mitigating Persistence of Open-Source Vulnerabilities in Maven Ecosystem",
+    2023,
+    56,
+    "https://doi.org/10.1109/ase56229.2023.00058"
+   ],
+   [
+    "On the adoption of static analysis for software security assessment–A case study of an open-source e-government project",
+    2021,
+    55,
+    "https://doi.org/10.1016/j.cose.2021.102470"
+   ]
+  ]
+ }
+}

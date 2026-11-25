@@ -1,0 +1,30 @@
+{% extends 'base.html' %}{% block title %}Decisores{% endblock %}
+{% block content %}
+<div class="head">
+  <div><h1>Decisores participantes</h1><div class="muted">Varios decisores pueden evaluar el mismo software. GUIOS EVAL calcula el consenso: mediana de la importancia del decisor y media de la ponderación de cada subfactor.</div></div>
+  <a class="btn pri" href="{{ url_for('paso2', eid=ev.id) }}">Continuar a factores relevantes →</a>
+</div>
+<div class="grid" style="grid-template-columns:1.7fr 1fr">
+  <div class="card">
+    <h2>Equipo de evaluación</h2>
+    <table class="t"><tr><th>Decisor</th><th>Rol</th><th>Factores valorados</th><th>Subfactores respondidos</th><th></th></tr>
+    {% for a in avance %}
+      <tr><td><b>{{ a.u.nombre }}</b>{% if a.u.id == ev.lider_id %} <span class="chip info">Líder</span>{% endif %}</td><td class="small">{{ NOMBRE_ROL[a.u.rol] }}</td>
+        <td class="mono">{{ a.votos }}/{{ nfac }}</td><td class="mono">{{ a.resp }}</td>
+        <td>{% if gestiona and a.u.id != ev.lider_id %}<form method="post"><input type="hidden" name="usuario_id" value="{{ a.u.id }}"><input type="hidden" name="accion" value="quitar"><button class="btn sm mal">Quitar</button></form>{% endif %}</td></tr>
+    {% endfor %}
+    </table>
+  </div>
+  <div class="card">
+    <h2>Agregar decisor</h2>
+    {% if gestiona %}
+    <form method="post" class="acciones">
+      <select name="usuario_id" style="max-width:320px">{% for u in candidatos %}<option value="{{ u.id }}">{{ u.nombre }} · {{ NOMBRE_ROL[u.rol] }}</option>{% endfor %}</select>
+      <button class="btn pri" {{ 'disabled' if not candidatos }}>Agregar</button>
+    </form>
+    <p class="small muted">Solo el líder agrega o quita decisores mientras la evaluación está abierta.</p>
+    {% else %}<p class="muted">Solo el líder de la evaluación puede modificar el equipo.</p>{% endif %}
+    <div class="alert info small">Cada decisor entra con su propio usuario y responde los pasos 2 y 3. Si dos decisores difieren en dos niveles o más, el sistema marca el factor o subfactor con desacuerdo para que lo conversen.</div>
+  </div>
+</div>
+{% endblock %}

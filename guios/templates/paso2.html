@@ -1,0 +1,36 @@
+{% extends 'base.html' %}{% block title %}Factores relevantes{% endblock %}
+{% block content %}
+<div class="head">
+  <div><h1>Evaluación · Factores relevantes</h1><div class="muted">Pasos 1 y 2 de GUIOS: declara la importancia que cada factor tiene para tu organización. La importancia relativa se calcula al instante con la Figura 5.10 de la tesis.</div></div>
+  <div class="acciones"><a class="btn" href="{{ url_for('participantes_view', eid=ev.id) }}">Decisores ({{ nparts }})</a><a class="btn pri" href="{{ url_for('paso3', eid=ev.id) }}">Continuar a subfactores →</a></div>
+</div>
+{% set actual = 2 %}{% include 'stepper.html' %}
+<div class="grid g4">
+  <div class="card metric"><div class="upper">Factores del catálogo</div><div class="val">{{ res.factores|length }}</div></div>
+  <div class="card metric"><div class="upper">Factores relevantes</div><div class="val" id="m-rel">{{ res.relevantes }}</div><div class="small muted">IR Opcional o superior</div></div>
+  <div class="card metric"><div class="upper">Sin importancia del decisor</div><div class="val" id="m-sin">{{ res.sin_id }}</div><div class="small muted">valóralos para continuar</div></div>
+  <div class="card metric"><div class="upper">Decisores</div><div class="val">{{ nparts }}</div><div class="small muted">consenso por mediana</div></div>
+</div>
+{% if not puede %}<div class="alert warn">Vista de solo lectura: {% if ev.estado not in ['borrador','en_curso'] %}la evaluación está {{ ESTADOS[ev.estado]|lower }}.{% else %}no eres decisor participante de esta evaluación.{% endif %}</div>{% endif %}
+<div class="card" style="padding:0">
+<table class="t" id="tabla-factores">
+  <tr><th>Factor</th><th>Dimensión</th><th>Imp. sugerida (IS)</th><th>Mi importancia (ID)</th><th>Consenso ID</th><th>Imp. relativa (IR)</th><th>Alcance</th></tr>
+  {% for f in res.factores %}{% set mio = mios.get(f.key) %}
+  <tr data-key="{{ f.key }}" data-nombre="{{ f.nombre }}" class="{{ '' if f.relevante or f.id is none else 'off' }}">
+    <td><b>{{ f.nombre }}</b><div class="small muted" style="max-width:300px">{{ f.descripcion or '' }}</div></td>
+    <td><span class="chip dim-{{ f.dimension }}">{{ f.dimension }}</span></td>
+    <td>{{ NIVELES[f.is_valor] }} <span class="muted mono">({{ f.is_valor }})</span>{% if f.il %}<div class="small muted mono" title="Importancia sugerida = Figura 5.10 (IE, IL)">IE {{ f.ie or 3 }} · IL {{ f.il }} · {{ f.citas }} citas</div>{% endif %}</td>
+    <td><div class="seg imp">{% for v in [1,2,3,4] %}<button type="button" data-v="{{ v }}" class="{{ 'sel' if mio and mio.id_valor==v }}" {{ 'disabled' if not puede }} title="{{ NIVELES[v] }}">{{ NIVELES[v] }}</button>{% endfor %}</div></td>
+    <td class="c-id">{% if f.id %}{{ NIVELES[f.id] }}{% if f.ids|length > 1 %} <span class="small muted">({{ f.ids|length }} votos)</span>{% endif %}{% else %}<span class="muted">sin valorar</span>{% endif %}{% if f.desacuerdo_id %} <span class="chip warn" title="Los decisores difieren en 2 niveles o más">desacuerdo</span>{% endif %}</td>
+    <td class="c-ir">{% if f.ir %}<span class="chip {{ 'info' if f.relevante else '' }}">{{ NIVELES[f.ir] }}</span>{% else %}<span class="muted">-</span>{% endif %}</td>
+    <td>{% if f.alcance_catalogo == 'Ambos' %}
+      <select class="alc" {{ 'disabled' if not puede }} style="width:auto"><option {{ 'selected' if (mio and mio.alcance=='Interno') or not mio or not mio.alcance }}>Interno</option><option {{ 'selected' if mio and mio.alcance=='Externo' }}>Externo</option></select>
+      {% else %}{{ f.alcance_catalogo }}{% endif %}</td>
+  </tr>
+  {% endfor %}
+</table>
+</div>
+<div class="card small muted">Escala literal de importancia: Irrelevante (1), Opcional (2), Importante (3) y Fundamental (4). Los factores con IR Irrelevante se excluyen del análisis (paso 2 de GUIOS). Soporte puede evaluarse como interno o externo según quién dará el soporte.
+<span class="saved" id="saved">✓ Guardado</span></div>
+{% endblock %}
+{% block scripts %}<script>initPaso2({{ ev.id }});</script>{% endblock %}

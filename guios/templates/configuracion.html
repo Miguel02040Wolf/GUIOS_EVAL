@@ -1,0 +1,118 @@
+{% extends 'base.html' %}{% block title %}Configuración{% endblock %}
+{% block scripts %}<script>
+function confirmarRol(form, yaEraAdmin){
+  var sel=document.querySelector('select[form="'+form.id+'"][name=rol]');
+  if(sel && sel.value==='admin' && !yaEraAdmin){
+    return confirm('Vas a dar el rol de ADMINISTRADOR DE PLATAFORMA: podrá crear usuarios, cambiar roles y ajustes. ¿Continuar?');
+  }
+  return true;
+}
+</script>{% endblock %}
+{% block content %}
+<div class="head"><div><h1>Configuración</h1><div class="muted">Perfil, usuarios y roles, y umbrales institucionales.</div></div></div>
+<div class="grid g2">
+  <div class="card"><h2>Mi perfil</h2>
+    <div class="acciones" style="gap:16px;margin-bottom:14px">
+      {% if g.user.foto %}<img class="avatar foto grande" src="{{ url_for('foto_usuario', uid=g.user.id) }}?v={{ g.user.foto }}" alt="Foto de perfil">
+      {% else %}<div class="avatar grande">{{ g.user.nombre.split()[0][0] }}{{ g.user.nombre.split()[-1][0] }}</div>{% endif %}
+      <div>
+        <form method="post" action="{{ url_for('perfil_foto') }}" enctype="multipart/form-data" class="acciones">
+          <label class="btn sm" style="cursor:pointer">Cambiar foto<input type="file" name="foto" accept="image/png,image/jpeg,image/webp" hidden onchange="this.form.submit()"></label>
+          {% if g.user.foto %}<button class="btn sm mal" name="quitar" value="1">Quitar foto</button>{% endif %}
+        </form>
+        <div class="small muted" style="margin-top:4px">PNG, JPG o WEBP de hasta 2 MB.</div>
+        <div class="small muted">Rol: <b>{{ NOMBRE_ROL[g.user.rol] }}</b> (solo el administrador cambia los roles).</div>
+      </div>
+    </div>
+    <form method="post" style="margin-bottom:16px"><input type="hidden" name="accion" value="perfil">
+      <div class="grid g2" style="gap:10px">
+        <div class="field"><label>Nombre completo</label><input type="text" name="nombre" value="{{ g.user.nombre }}" minlength="3" required></div>
+        <div class="field"><label>Correo (para iniciar sesión)</label><input type="email" name="correo" value="{{ g.user.correo }}" required></div>
+      </div>
+      <div class="acciones"><input type="password" name="actual" placeholder="Contraseña actual para confirmar" required style="max-width:280px"><button class="btn pri">Guardar perfil</button></div>
+    </form>
+    <div class="upper" style="margin-bottom:8px">Cambiar contraseña</div>
+    <form method="post"><input type="hidden" name="accion" value="clave">
+      <div class="grid g2" style="gap:10px"><div class="field"><label>Contraseña actual</label><input type="password" name="actual" required></div>
+      <div class="field"><label>Contraseña nueva</label><input type="password" name="nueva" minlength="6" required></div></div>
+      <button class="btn">Cambiar contraseña</button></form>
+  </div>
+  <div class="card"><h2>Umbrales institucionales · RF-14</h2>
+    <form method="post"><input type="hidden" name="accion" value="ajustes">
+      <div class="field"><label>Organización</label><input type="text" name="organizacion" value="{{ org }}" {{ 'disabled' if not es_admin }}></div>
+      <div class="field"><label>Umbral de ponderación media para FODA</label><input type="number" name="umbral_foda" value="{{ umbral }}" min="1" max="4" step="0.1" {{ 'disabled' if not es_admin }}>
+        <div class="small muted">La tesis fija 3: con PM ≥ 3 el factor es Fortaleza (interno) u Oportunidad (externo).</div></div>
+      {% if es_admin %}<button class="btn pri">Guardar ajustes</button>{% endif %}
+    </form>
+    <p class="small muted">Sesión: expira tras 30 minutos de inactividad. Guardado: automático en cada respuesta.</p>
+  </div>
+</div>
+<div class="card" id="ia"><h2>Asistente de inteligencia artificial · RF-13</h2>
+  <p class="small muted" style="margin-top:-6px">La IA solo sugiere respuestas y redacta el resumen; el evaluador acepta o descarta cada sugerencia y la recomendación A, B o C siempre la calcula el motor GUIOS. Las claves se leen del archivo <span class="mono">claves_guios.env</span>, fuera de la carpeta del sistema, y nunca se envían al navegador.</p>
+  <div class="grid g3" style="gap:12px">
+    <div class="prov {{ 'on' if ia_estado.groq }}"><b>Groq</b><div class="small">{{ 'Clave configurada' if ia_estado.groq else 'Sin clave' }}</div><div class="small muted">gpt-oss-120b · nube</div></div>
+    <div class="prov {{ 'on' if ia_estado.gemini }}"><b>Gemini</b><div class="small">{{ 'Clave configurada' if ia_estado.gemini else 'Sin clave' }}</div><div class="small muted">gemini-flash · nube, respaldo</div></div>
+    <div class="prov {{ 'on' if ia_estado.ollama == 'lista' }}"><b>IA local (Ollama)</b><div class="small">{{ {'lista': 'Instalada y lista, sin internet', 'sin modelo': 'Falta el modelo: ejecuta instalar.bat', 'no disponible': 'No instalada o apagada: ejecuta instalar.bat'}[ia_estado.ollama] }}</div><div class="small muted mono">{{ ia_estado.ollama_modelo }} · {{ ia_estado.ollama_url }}</div></div>
+  </div>
+  {% if es_admin %}
+  <form method="post" action="{{ url_for('configuracion_ia') }}" class="acciones" style="margin-top:14px">
+    <label class="small">Modo</label>
+    <select name="ia_modo" style="width:330px">
+      <option value="automatico" {{ 'selected' if ia_modo=='automatico' }}>Automático: Groq, luego Gemini, luego IA local</option>
+      <option value="nube" {{ 'selected' if ia_modo=='nube' }}>Solo nube: Groq y Gemini</option>
+      <option value="local" {{ 'selected' if ia_modo=='local' }}>Solo IA local (sin internet)</option>
+      <option value="desactivado" {{ 'selected' if ia_modo=='desactivado' }}>Desactivado</option>
+    </select>
+    <button class="btn pri" name="guardar" value="1">Guardar</button>
+    <button class="btn" name="probar" value="1" title="Prueba el modo elegido sin guardarlo">Probar conexión</button>
+  </form>
+  {% else %}<p class="small">Modo actual: <b>{{ ia_modo }}</b></p>{% endif %}
+</div>
+{% if es_admin %}
+<div class="card" id="solicitudes">
+  <div class="acciones" style="justify-content:space-between">
+    <h2 style="margin:0">Solicitudes de cuenta {% if solicitudes %}<span class="chip warn">{{ solicitudes|length }}</span>{% endif %}</h2>
+    <form method="post" action="{{ url_for('configuracion_correo') }}" class="acciones">
+      <span class="small {{ 'muted' if correo_ok }}">{% if correo_ok %}Correo de envío configurado{% else %}<b>Sin correo de envío:</b> las cuentas nuevas se crean sin verificar el correo{% endif %}</span>
+      <button class="btn sm">Probar correo</button></form>
+  </div>
+  <p class="small muted">Las personas que se registran {% if correo_ok %}verifican su correo con un código y {% endif %}esperan aquí tu aprobación. Puedes cambiar el rol que solicitaron antes de aprobar. Si alguien olvida su contraseña{% if not correo_ok %} (no hay correo para enviar códigos){% endif %}, asígnale una temporal en Usuarios y roles: al entrar deberá cambiarla.</p>
+  {% if solicitudes %}
+  <table class="t"><tr><th>Persona</th><th>Estado</th><th>Rol solicitado</th><th>Rol que tendrá</th><th></th></tr>
+  {% for u in solicitudes %}<tr>
+    <td><b>{{ u.nombre }}</b><div class="small muted">{{ u.correo }} · {{ u.creado }}</div></td>
+    <td>{% if u.estado == 'pendiente_correo' %}<span class="chip">Verificando correo</span>{% if u.codigo_visible %}<div class="small">Código: <b class="mono">{{ u.codigo_visible }}</b></div>{% endif %}
+        {% else %}<span class="chip warn">Correo verificado</span>{% endif %}</td>
+    <td>{{ ROLES.get(u.rol_solicitado, '-') }}</td>
+    <td><select form="fs{{ u.id }}" name="rol" style="min-width:200px">{% for k,v in ROLES.items() %}<option value="{{ k }}" {{ 'selected' if k==u.rol_solicitado }}>{{ v }}</option>{% endfor %}</select></td>
+    <td><form id="fs{{ u.id }}" method="post" class="acciones" style="flex-wrap:nowrap" onsubmit="return confirmarRol(this, false)">
+      <input type="hidden" name="accion" value="solicitud"><input type="hidden" name="usuario_id" value="{{ u.id }}">
+      {% if u.estado == 'pendiente_aprobacion' %}<button class="btn sm ok" name="decision" value="aprobar">Aprobar</button>{% endif %}
+      <input type="text" name="motivo" placeholder="Motivo (si rechazas)" style="width:170px">
+      <button class="btn sm mal" name="decision" value="rechazar" onclick="this.form.onsubmit=null">Rechazar</button></form></td>
+  </tr>{% endfor %}</table>
+  {% else %}<p class="small">No hay solicitudes pendientes.</p>{% endif %}
+  {% if recuperaciones %}<div class="alert warn small" style="margin-top:10px"><b>Códigos de recuperación sin enviar</b> (no hay correo configurado): {% for r in recuperaciones %}{{ r.correo }} → <b class="mono">{{ r.codigo_visible }}</b>{{ ', ' if not loop.last }}{% endfor %}</div>{% endif %}
+</div>
+<div class="card"><div class="acciones" style="justify-content:space-between"><h2 style="margin:0">Usuarios y roles · RF-01</h2></div>
+<p class="small muted">Las cuentas que crees aquí reciben una contraseña temporal; la persona debe cambiarla en su primer inicio de sesión.</p>
+<table class="t"><tr><th>Nombre</th><th>Correo</th><th>Rol</th><th>Activo</th><th>Nueva contraseña</th><th></th></tr>
+{% for u in usuarios %}<tr>
+  <td><input form="fu{{ u.id }}" type="text" name="nombre" value="{{ u.nombre }}">{% if u.estado=='rechazado' %}<span class="chip mal small">rechazado</span>{% elif u.cambiar_clave %}<span class="chip small">contraseña temporal</span>{% endif %}</td><td><input form="fu{{ u.id }}" type="email" name="correo" value="{{ u.correo }}"></td>
+  <td><select form="fu{{ u.id }}" name="rol">{% for k,v in ROLES.items() %}<option value="{{ k }}" {{ 'selected' if u.rol==k }}>{{ v }}</option>{% endfor %}</select></td>
+  <td><input form="fu{{ u.id }}" type="checkbox" name="activo" value="1" {{ 'checked' if u.activo }}></td><td><input form="fu{{ u.id }}" type="password" name="clave" placeholder="(sin cambio)"></td>
+  <td><form id="fu{{ u.id }}" method="post" onsubmit="return confirmarRol(this, {{ 'true' if u.rol=='admin' else 'false' }})"><input type="hidden" name="accion" value="usuario"><input type="hidden" name="usuario_id" value="{{ u.id }}"><button class="btn sm">Guardar</button></form></td></tr>{% endfor %}
+<tr>
+  <td><input form="fnew" type="text" name="nombre" placeholder="Nombre completo" required></td><td><input form="fnew" type="email" name="correo" placeholder="correo@guios.edu.ec" required></td>
+  <td><select form="fnew" name="rol" required><option value="" selected disabled>Selecciona un rol...</option>{% for k,v in ROLES.items() %}<option value="{{ k }}">{{ v }}</option>{% endfor %}</select></td><td>✓</td>
+  <td><input form="fnew" type="password" name="clave" placeholder="Contraseña temporal (mín. 6)" minlength="6" required></td><td><form id="fnew" method="post" onsubmit="return confirmarRol(this)"><input type="hidden" name="accion" value="usuario"><button class="btn sm pri">+ Crear</button></form></td></tr>
+</table></div>
+{% endif %}
+<div class="card"><h2>Roles del sistema</h2><table class="t"><tr><th>Rol</th><th>Puede</th></tr>
+<tr><td>Administrador de plataforma</td><td>Todo: usuarios, umbrales, catálogo y evaluaciones.</td></tr>
+<tr><td>Administrador de catálogo</td><td>Crear versiones del catálogo; agregar, editar y eliminar factores y subfactores; publicar.</td></tr>
+<tr><td>Líder de evaluación</td><td>Crear evaluaciones, invitar decisores, evaluar, enviar a revisión y reabrir como revisión nueva.</td></tr>
+<tr><td>Evaluador (decisor)</td><td>Valorar factores y subfactores de las evaluaciones en las que participa.</td></tr>
+<tr><td>Revisor / decisor final</td><td>Emitir la decisión (aprobada, condicionada, devuelta o rechazada) con comentario obligatorio y cerrar.</td></tr>
+<tr><td>Auditor / lector</td><td>Consultar evaluaciones, informes y la auditoría, sin editar.</td></tr></table></div>
+{% endblock %}

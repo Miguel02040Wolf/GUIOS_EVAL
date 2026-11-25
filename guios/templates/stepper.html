@@ -1,0 +1,8 @@
+{% set pasos = [('paso1','Datos generales'),('paso2','Factores relevantes'),('paso3','Subfactores'),('paso4','Resultado y recomendación')] %}
+<nav class="stepper" aria-label="Pasos de la evaluación">
+{% for ep_, nombre in pasos %}
+  {% set i = loop.index %}
+  <a class="step {{ 'on' if actual==i else ('done' if actual>i else '') }}" href="{{ url_for(ep_, eid=ev.id) }}"><span class="n">{{ '✓' if actual>i else i }}</span>{{ nombre }}</a>
+  {% if not loop.last %}<span class="step-line"></span>{% endif %}
+{% endfor %}
+</nav>

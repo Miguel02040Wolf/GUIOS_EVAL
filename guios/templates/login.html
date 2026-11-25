@@ -1,0 +1,23 @@
+{% extends 'publico.html' %}{% block title %}Iniciar sesión{% endblock %}
+{% block caja %}
+<form method="post">
+  <div class="upper">Sistema de evaluación</div>
+  <h1 style="margin:6px 0 4px">Iniciar sesión</h1>
+  <p class="muted" style="margin-top:0">Accede con tus credenciales institucionales.</p>
+  {% if error %}<div class="alert error">{{ error|safe }}</div>{% endif %}
+  <div class="field"><label for="correo">Correo electrónico <span class="req">*</span></label>
+    <input id="correo" type="email" name="correo" required placeholder="usuario@guios.edu.ec" value="{{ correo or '' }}" autofocus></div>
+  <div class="field"><label for="clave">Contraseña <span class="req">*</span></label>
+    <input id="clave" type="password" name="clave" required placeholder="••••••••"></div>
+  <button class="btn pri" style="width:100%;justify-content:center;padding:11px" type="submit">Iniciar sesión</button>
+  <div class="acciones" style="justify-content:space-between;margin-top:12px">
+    <a href="{{ url_for('recuperar') }}" class="small">¿Olvidaste tu contraseña?</a>
+    <a href="{{ url_for('registro') }}" class="small"><b>Crear cuenta</b></a>
+  </div>
+  <div class="alert info small" style="margin-top:18px">
+    <b>Usuarios de prueba</b> (contraseña <span class="mono">guios2026</span>):<br>
+    admin@ · catalogo@ · lider@ · evaluador@ · evaluador2@ · revisor@ · auditor@ <span class="mono">guios.edu.ec</span>
+  </div>
+  <p class="small muted" style="text-align:center">GUIOS EVAL v2.2 · <a href="{{ url_for('verificar_informe') }}">Verificar un informe</a> · La sesión expira tras 30 minutos de inactividad</p>
+</form>
+{% endblock %}

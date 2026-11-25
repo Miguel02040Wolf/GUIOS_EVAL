@@ -1,0 +1,20 @@
+{% extends 'publico.html' %}{% block title %}Crear cuenta{% endblock %}
+{% block caja %}
+<form method="post">
+  <div class="upper">Registro</div>
+  <h1 style="margin:6px 0 4px">Crear cuenta</h1>
+  <p class="muted" style="margin-top:0">{% if con_correo %}Te enviaremos un código a tu correo. Luego el administrador aprobará tu cuenta y te asignará un rol.{% else %}El administrador aprobará tu cuenta y te asignará un rol.{% endif %}</p>
+  <div class="field"><label>Nombre completo <span class="req">*</span></label><input type="text" name="nombre" value="{{ f.nombre or '' }}" minlength="3" required></div>
+  <div class="field"><label>Correo electrónico <span class="req">*</span></label><input type="email" name="correo" value="{{ f.correo or '' }}" required></div>
+  <div class="grid g2" style="gap:10px">
+    <div class="field"><label>Contraseña <span class="req">*</span></label><input type="password" name="clave" minlength="8" required placeholder="Mínimo 8 caracteres"></div>
+    <div class="field"><label>Repetir contraseña <span class="req">*</span></label><input type="password" name="clave2" minlength="8" required></div>
+  </div>
+  <div class="field"><label>Rol que solicitas <span class="req">*</span></label>
+    <select name="rol" required><option value="" disabled {{ 'selected' if not f.rol }}>Selecciona un rol...</option>
+      {% for k, v in roles.items() %}<option value="{{ k }}" {{ 'selected' if f.rol==k }}>{{ v }}</option>{% endfor %}</select>
+    <div class="small muted">El administrador puede asignarte otro rol si corresponde.</div></div>
+  <button class="btn pri" style="width:100%;justify-content:center;padding:11px">{{ "Crear cuenta y enviar código" if con_correo else "Crear cuenta" }}</button>
+  <p class="small" style="text-align:center;margin-top:12px">¿Ya tienes cuenta? <a href="{{ url_for('login') }}">Inicia sesión</a></p>
+</form>
+{% endblock %}

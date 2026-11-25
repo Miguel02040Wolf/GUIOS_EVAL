@@ -1,0 +1,19 @@
+{% extends 'base.html' %}{% block title %}Auditoría{% endblock %}
+{% block content %}
+<div class="head"><div><h1>Auditoría</h1><div class="muted">Registro de quién hizo qué y cuándo (RF-12). Cada entrada lleva una huella SHA-256 encadenada con la anterior: si alguien modifica o borra un registro, la cadena se rompe y el sistema lo detecta.</div></div>
+  <a class="btn" href="{{ url_for('verificar_informe') }}">Verificar un informe</a></div>
+{% if integra %}
+<div class="alert ok"><b>✓ Cadena de auditoría íntegra.</b> Se comprobaron {{ total }} registros y ninguno fue alterado ni eliminado.</div>
+{% else %}
+<div class="alert error"><b>⚠ La cadena de auditoría está rota en el registro #{{ roto }}.</b> Ese registro o uno anterior fue modificado o eliminado fuera del sistema.</div>
+{% endif %}
+<form class="card acciones"><input type="text" name="q" value="{{ q }}" placeholder="Buscar por usuario, acción, detalle o código" style="max-width:420px"><button class="btn">Buscar</button></form>
+<div class="card" style="padding:0"><table class="t"><tr><th>#</th><th>Fecha</th><th>Usuario</th><th>Evaluación</th><th>Acción</th><th>Detalle</th><th>Huella</th></tr>
+{% for a in filas %}<tr><td class="mono small">{{ a.id }}</td><td class="mono small">{{ a.fecha }}</td><td>{{ a.nombre or 'Sistema' }}</td><td class="mono">{{ a.codigo or '-' }}</td><td><span class="chip">{{ a.accion }}</span></td><td class="small">{{ a.detalle or '' }}</td><td class="mono small muted" title="{{ a.hash }}">{{ (a.hash or '')[:10] }}</td></tr>{% endfor %}
+</table></div>
+{% if sellos %}
+<div class="card" style="padding:0"><div style="padding:14px 16px 0"><h2>Informes sellados</h2></div><table class="t"><tr><th>Folio</th><th>Evaluación</th><th>Emitido</th><th>Por</th><th>Huella del archivo</th></tr>
+{% for s in sellos %}<tr><td class="mono"><a href="{{ url_for('verificar_informe', folio=s.folio) }}">{{ s.folio }}</a></td><td class="mono">{{ s.codigo }}</td><td class="mono small">{{ s.fecha }}</td><td>{{ s.nombre or '-' }}</td><td class="mono small muted">{{ s.hash_archivo[:16] }}…</td></tr>{% endfor %}
+</table></div>
+{% endif %}
+{% endblock %}

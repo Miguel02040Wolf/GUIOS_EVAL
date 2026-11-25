@@ -1,0 +1,55 @@
+{% extends 'base.html' %}{% block title %}Inicio{% endblock %}
+{% block content %}
+<div class="head">
+  <div><h1>Hola, {{ g.user.nombre.split()[0] }}</h1><div class="muted">Resumen de la actividad de evaluación de software de la organización.</div></div>
+  <div class="acciones">
+    {% if g.user.rol in ['lider','admin'] %}<a class="btn pri" href="{{ url_for('nueva_evaluacion') }}">+ Nueva evaluación</a>{% endif %}
+    <a class="btn" href="{{ url_for('evaluaciones') }}">Ver historial</a>
+  </div>
+</div>
+<div class="grid g6">
+  <div class="card metric"><div class="upper">Factores activos</div><div class="val">{{ nf }}</div><div class="small muted">{{ cat.nombre if cat else '-' }} v{{ cat.version if cat else '' }}</div></div>
+  <div class="card metric"><div class="upper">Subfactores</div><div class="val">{{ ns }}</div><div class="small muted">en el catálogo publicado</div></div>
+  <div class="card metric"><div class="upper">En curso</div><div class="val">{{ stats.en_curso + stats.borrador }}</div><div class="small muted">borrador y en curso</div></div>
+  <div class="card metric"><div class="upper">En revisión</div><div class="val">{{ stats.en_revision }}</div><div class="small muted">esperan decisión</div></div>
+  <div class="card metric"><div class="upper">Cerradas</div><div class="val">{{ stats.cerrada }}</div><div class="small muted">con decisión emitida</div></div>
+  <div class="card metric"><div class="upper">Guardado</div><div class="val" style="font-size:18px;margin:12px 0 6px;font-family:inherit">Automático</div><div class="small muted">cada respuesta se guarda al instante</div></div>
+</div>
+<div class="grid g2">
+  <div class="card">
+    <h2>Mis evaluaciones en progreso</h2>
+    {% for p in progreso %}
+      <div style="border:1px solid var(--borde);border-radius:10px;padding:14px;margin-bottom:10px">
+        <div class="acciones" style="justify-content:space-between">
+          <div><b class="mono">{{ p.ev.codigo }}</b> · {{ p.ev.sw_nombre }} <span class="muted">({{ p.ev.org_nombre }})</span></div>
+          <span class="chip {{ p.ev.estado }}">{{ ESTADOS[p.ev.estado] }}</span>
+        </div>
+        <div class="small muted" style="margin:8px 0 4px">Factores relevantes: {{ p.relevantes }} · Subfactores evaluados (consenso): {{ p.hechos }}/{{ p.total }}{% if p.sin_id %} · {{ p.sin_id }} factores sin importancia del decisor{% endif %}</div>
+        <div class="bar"><i style="width:{{ (100*p.hechos/p.total)|round if p.total else 0 }}%"></i></div>
+        <div style="margin-top:10px"><a class="btn sm pri" href="{{ url_for('paso2' if p.sin_id else 'paso3', eid=p.ev.id) }}">Continuar evaluación</a></div>
+      </div>
+    {% else %}
+      <div class="empty">No tienes evaluaciones abiertas.</div>
+    {% endfor %}
+  </div>
+  <div class="card">
+    <h2>Actividad reciente</h2>
+    <ul class="timeline">
+    {% for a in recientes %}
+      <li><div class="small muted mono">{{ a.fecha }} · {{ a.nombre or 'Sistema' }}</div><div>{{ a.detalle or a.accion }}</div></li>
+    {% endfor %}
+    </ul>
+    {% if g.user.rol in ['admin','auditor','revisor','lider'] %}<a href="{{ url_for('auditoria') }}">Ver toda la auditoría →</a>{% endif %}
+  </div>
+</div>
+<div class="card">
+  <h2>Últimas evaluaciones cerradas</h2>
+  <table class="t"><tr><th>Código</th><th>Software</th><th>Organización</th><th>Índice</th><th>Recomendación</th><th>Decisión</th><th></th></tr>
+  {% for c, r in cerradas %}
+    <tr><td class="mono">{{ c.codigo }}</td><td>{{ c.sw_nombre }}</td><td>{{ c.org_nombre }}</td><td class="mono">{{ r.puntaje if r.puntaje is not none else '-' }}/100</td>
+      <td>{% if r.recomendacion %}<span class="chip {{ r.recomendacion }}">{{ r.recomendacion }} · {{ r.titulo }}</span>{% endif %}</td>
+      <td><span class="chip {{ c.decision }}">{{ DECISIONES[c.decision] }}</span></td><td><a href="{{ url_for('paso4', eid=c.id) }}">Ver</a></td></tr>
+  {% else %}<tr><td colspan="7" class="empty">Aún no hay evaluaciones cerradas.</td></tr>{% endfor %}
+  </table>
+</div>
+{% endblock %}

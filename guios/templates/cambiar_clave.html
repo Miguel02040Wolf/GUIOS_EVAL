@@ -1,0 +1,15 @@
+{% extends 'publico.html' %}{% block title %}Cambiar contraseña{% endblock %}
+{% block caja %}
+<form method="post">
+  <div class="upper">Primer inicio de sesión</div>
+  <h1 style="margin:6px 0 4px">Crea tu contraseña</h1>
+  <p class="muted" style="margin-top:0">Hola, <b>{{ g.user.nombre }}</b>. Tu cuenta fue creada por el administrador con una contraseña temporal. Por seguridad, elige una propia para continuar.</p>
+  <div class="field"><label>Contraseña temporal</label><input type="password" name="actual" required></div>
+  <div class="grid g2" style="gap:10px">
+    <div class="field"><label>Contraseña nueva</label><input type="password" name="clave" minlength="8" required placeholder="Mínimo 8 caracteres"></div>
+    <div class="field"><label>Repetir</label><input type="password" name="clave2" minlength="8" required></div>
+  </div>
+  <button class="btn pri" style="width:100%;justify-content:center;padding:11px">Guardar y continuar</button>
+  <p class="small" style="text-align:center;margin-top:12px"><a href="{{ url_for('salir') }}">Cerrar sesión</a></p>
+</form>
+{% endblock %}

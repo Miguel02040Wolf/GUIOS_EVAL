@@ -1,0 +1,22 @@
+{% extends 'base.html' %}{% block title %}Comparar{% endblock %}
+{% block content %}
+<div class="head"><div><h1>Comparar evaluaciones</h1><div class="muted">Compara hasta cuatro evaluaciones o software candidatos lado a lado (RF-10).</div></div></div>
+<form class="card" method="get">
+  <label>Selecciona las evaluaciones</label>
+  <div class="acciones">{% for e in todas %}<label style="text-transform:none;font-weight:500;letter-spacing:0;font-size:13.5px;color:var(--tinta);border:1px solid var(--borde);border-radius:8px;padding:6px 10px;margin:0"><input type="checkbox" name="ev" value="{{ e.id }}" {{ 'checked' if e.id in sel }}> <span class="mono">{{ e.codigo }}</span> {{ e.sw_nombre }}</label>{% endfor %}</div>
+  <div style="margin-top:12px"><button class="btn pri">Comparar</button></div>
+</form>
+{% if columnas %}
+<div class="card" style="padding:0;overflow:auto">
+<table class="t">
+  <tr><th>Criterio</th>{% for c in columnas %}<th>{{ c.ev.codigo }} · {{ c.ev.sw_nombre }}</th>{% endfor %}</tr>
+  <tr><td><b>Organización</b></td>{% for c in columnas %}<td>{{ c.ev.org_nombre }}</td>{% endfor %}</tr>
+  <tr><td><b>Estado</b></td>{% for c in columnas %}<td><span class="chip {{ c.ev.estado }}">{{ ESTADOS[c.ev.estado] }}</span></td>{% endfor %}</tr>
+  <tr><td><b>Índice de adopción</b></td>{% for c in columnas %}<td class="mono" style="font-size:18px;font-weight:700">{{ c.res.puntaje if c.res.puntaje is not none else '-' }}/100</td>{% endfor %}</tr>
+  {% for d in DIMENSIONES %}<tr><td>Dimensión {{ d|lower }}</td>{% for c in columnas %}<td class="mono">{{ c.res.dimensiones[d] if c.res.dimensiones[d] is not none else '-' }}</td>{% endfor %}</tr>{% endfor %}
+  <tr><td><b>Recomendación</b></td>{% for c in columnas %}<td>{% if c.res.recomendacion %}<span class="chip {{ c.res.recomendacion.tipo }}">{{ c.res.recomendacion.tipo }} · {{ c.res.recomendacion.titulo }}</span>{% else %}-{% endif %}</td>{% endfor %}</tr>
+  <tr><td><b>F / O / D / A</b></td>{% for c in columnas %}<td class="mono">{{ c.res.conteo.Fortaleza }} / {{ c.res.conteo.Oportunidad }} / {{ c.res.conteo.Debilidad }} / {{ c.res.conteo.Amenaza }}</td>{% endfor %}</tr>
+  {% for nombre, fs in factores %}<tr><td>{{ nombre }}</td>{% for f in fs %}<td>{% if f and f.foda %}<span class="chip {{ f.foda }}">{{ f.foda }}</span> <span class="mono small">{{ f.pm|num }}</span>{% elif f and f.ir and not f.relevante %}<span class="muted small">No relevante</span>{% else %}<span class="muted small">-</span>{% endif %}</td>{% endfor %}</tr>{% endfor %}
+</table></div>
+{% endif %}
+{% endblock %}

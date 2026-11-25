@@ -1,0 +1,5 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><title>{{ codigo }} · GUIOS EVAL</title>
+<link rel="icon" href="{{ url_for('static', filename='favicon.svg') }}" type="image/svg+xml">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}"></head>
+<body><div class="card empty" style="max-width:460px;margin:12vh auto"><div class="brand" style="justify-content:center;color:var(--marca)">GUIOS <span class="tag">EVAL</span></div>
+<div class="score">{{ codigo }}</div><p>{{ mensaje }}</p><a class="btn pri" href="{{ url_for('panel') if g.user else url_for('login') }}">Volver al inicio</a></div></body></html>

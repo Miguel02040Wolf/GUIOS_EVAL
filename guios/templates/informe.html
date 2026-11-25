@@ -1,0 +1,43 @@
+{% extends 'base.html' %}{% block title %}Informe {{ ev.codigo }}{% endblock %}
+{% block content %}
+<div class="head noprint">
+  <div><h1>Informe de evaluación</h1><div class="muted">Vista previa del documento oficial. Usa «Imprimir / Guardar PDF» y elige «Guardar como PDF».</div></div>
+  <div class="acciones"><a class="btn pri" href="{{ url_for('informe_pdf', eid=ev.id) }}">Descargar PDF</a><a class="btn" href="{{ url_for('exportar_xlsx', eid=ev.id) }}">Exportar Excel</a><button class="btn" onclick="window.print()">Imprimir</button><a class="btn" href="{{ url_for('paso4', eid=ev.id) }}">← Volver</a></div>
+</div>
+<div class="card" style="padding:0;overflow:hidden">
+  <div style="background:var(--marca);color:#fff;padding:22px 28px;display:flex;justify-content:space-between;align-items:center">
+    <div><div style="font-size:22px;font-weight:800">GUIOS <span class="tag" style="background:var(--eval);color:var(--marca);font-size:11px;padding:2px 7px;border-radius:5px">EVAL</span></div><div class="small" style="color:#C7D2FE">Informe de evaluación de adopción de software</div></div>
+    <div style="text-align:right"><div class="mono" style="font-size:18px">{{ ev.codigo }}</div><div class="small" style="color:#C7D2FE">Generado: {{ ev.cerrado or ev.creado }}</div></div>
+  </div>
+  <div style="padding:22px 28px">
+    <div class="grid g2">
+      <div><div class="upper">Organización</div><b>{{ ev.org_nombre }}</b><div class="small muted">{{ ev.org_sector or '' }} {{ ('· RUC ' ~ ev.org_ruc) if ev.org_ruc }}</div></div>
+      <div><div class="upper">Software evaluado</div><b>{{ ev.sw_nombre }} {{ ev.sw_version or '' }}</b><div class="small muted">{{ ev.sw_tipo or '' }} {{ ('· ' ~ ev.sw_licencia) if ev.sw_licencia }}</div></div>
+      <div><div class="upper">Equipo de decisores</div>{{ parts|map(attribute='nombre')|join(', ') }}</div>
+      <div><div class="upper">Estado y decisión</div><span class="chip {{ ev.estado }}">{{ ESTADOS[ev.estado] }}</span> <span class="chip {{ ev.decision }}">{{ DECISIONES[ev.decision] }}</span>{% if decisor %}<div class="small muted">{{ decisor }} · {{ ev.decision_fecha }}</div>{% endif %}</div>
+    </div>
+    {% if ev.estado != 'cerrada' %}<div class="alert warn" style="margin-top:14px">Informe preliminar: la evaluación todavía no está cerrada.</div>{% endif %}
+    <h2 style="margin-top:22px">1. Resultado</h2>
+    {% set r = res.recomendacion %}
+    <p>Índice de adopción: <b class="mono">{{ res.puntaje if res.puntaje is not none else '-' }}/100</b>
+      ({% for d,v in res.dimensiones.items() %}{{ d }} {{ v if v is not none else '-' }}{{ ', ' if not loop.last }}{% endfor %}).
+      Factores relevantes: {{ res.relevantes }}. FODA: {{ res.conteo.Fortaleza }} fortalezas, {{ res.conteo.Oportunidad }} oportunidades, {{ res.conteo.Debilidad }} debilidades y {{ res.conteo.Amenaza }} amenazas.</p>
+    {% if r %}<div class="reco {{ r.tipo }}"><b>Recomendación {{ r.tipo }}: {{ r.titulo }}.</b> {{ r.texto }}
+      {% for c in r.causas %}<div class="small" style="margin-top:6px">• <b>{{ c.factor }}</b> ({{ c.foda }}, IR {{ c.ir }}, PM {{ c.pm|num }}): {{ c.accion }}.</div>{% endfor %}</div>{% endif %}
+    {% if resumen and resumen.resumen %}<h3 style="margin-top:14px">Resumen ejecutivo</h3><p style="text-align:justify">{{ resumen.resumen }}</p>
+      <p class="small muted">Redactado con {{ resumen.fuente }}{% if resumen.modelo %} ({{ resumen.modelo }}){% endif %}; la recomendación la calcula el motor GUIOS.</p>{% endif %}
+    {% if ev.decision_comentario %}<p><b>Comentario del revisor:</b> {{ ev.decision_comentario }}</p>{% endif %}
+    <h2 style="margin-top:22px">2. Factores evaluados</h2>
+    <table class="t"><tr><th>Factor</th><th>Dimensión</th><th>IS</th><th>ID</th><th>IR</th><th>Alcance</th><th>PM</th><th>FODA</th></tr>
+    {% for f in res.factores if f.relevante %}<tr><td>{{ f.nombre }}</td><td>{{ f.dimension }}</td><td class="mono">{{ f.is_valor }}</td><td class="mono">{{ f.id }}</td><td>{{ NIVELES[f.ir] }}</td><td>{{ f.alcance }}</td><td class="mono">{{ f.pm|num }}</td><td>{% if f.foda %}<span class="chip {{ f.foda }}">{{ f.foda }}</span>{% endif %}</td></tr>{% endfor %}
+    </table>
+    <p class="small muted">Factores no relevantes (IR Irrelevante): {{ res.factores|rejectattr('relevante')|map(attribute='nombre')|join(', ') or 'ninguno' }}.</p>
+    <h2 style="margin-top:22px">3. Detalle de subfactores</h2>
+    {% for f in res.factores if f.relevante %}
+      <h3 style="margin-top:12px">{{ f.nombre }}</h3>
+      <table class="t">{% for s in f.subfactores %}<tr><td>{{ s.texto }}</td><td class="mono" style="width:80px">{{ s.ps|num }}</td><td style="width:220px" class="small">{{ NIVELES_PS[(s.ps+0.5)|int] if s.ps else 'Sin evaluar' }}</td></tr>{% endfor %}</table>
+    {% endfor %}
+    <p class="small muted" style="margin-top:20px">Método: GUIOS (Rea). IR según la función de la Figura 5.10; PM como media de las ponderaciones de los subfactores; FODA con umbral {{ umbral|num(1) }}; consenso entre decisores por mediana (ID) y media (PS). Exportar este informe no modifica la evaluación.</p>
+  </div>
+</div>
+{% endblock %}

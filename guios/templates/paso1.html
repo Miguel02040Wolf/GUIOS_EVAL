@@ -1,0 +1,50 @@
+{% extends 'base.html' %}{% block title %}Datos generales{% endblock %}
+{% block content %}
+<div class="head">
+  <div><h1>Evaluación · Datos generales</h1><div class="muted">Registra la organización y el software candidato. El catálogo queda fijado al crear la evaluación (RF-03).</div></div>
+  {% if ev %}<a class="btn" href="{{ url_for('participantes_view', eid=ev.id) }}">Decisores participantes</a>{% endif %}
+</div>
+{% if ev %}{% set actual = 1 %}{% include 'stepper.html' %}{% endif %}
+{% set ro = ev and (ev.estado not in ['borrador','en_curso'] or (g.user.id != ev.lider_id and g.user.rol != 'admin')) %}
+<form method="post">
+<div class="grid g2">
+  <div class="card">
+    <div class="upper" style="margin-bottom:12px">Datos de la organización</div>
+    <div class="field"><label>Nombre de la organización <span class="req">*</span></label><input type="text" name="org_nombre" required value="{{ form.org_nombre or '' }}" {{ 'disabled' if ro }}></div>
+    <div class="grid g2" style="gap:12px">
+      <div class="field"><label>RUC</label><input type="text" name="org_ruc" value="{{ form.org_ruc or '' }}" {{ 'disabled' if ro }}></div>
+      <div class="field"><label>Sector</label><input type="text" name="org_sector" value="{{ form.org_sector or '' }}" placeholder="Público, educación, salud..." {{ 'disabled' if ro }}></div>
+    </div>
+    <div class="field"><label>Correo institucional</label><input type="email" name="org_correo" value="{{ form.org_correo or '' }}" {{ 'disabled' if ro }}></div>
+  </div>
+  <div class="card">
+    <div class="upper" style="margin-bottom:12px">Software a evaluar</div>
+    <div class="grid g2" style="gap:12px">
+      <div class="field"><label>Nombre del software <span class="req">*</span></label><input type="text" name="sw_nombre" required value="{{ form.sw_nombre or '' }}" {{ 'disabled' if ro }}></div>
+      <div class="field"><label>Versión</label><input type="text" name="sw_version" value="{{ form.sw_version or '' }}" {{ 'disabled' if ro }}></div>
+      <div class="field"><label>Tipo de software</label><input type="text" name="sw_tipo" value="{{ form.sw_tipo or '' }}" placeholder="Suite ofimática, ERP, LMS..." {{ 'disabled' if ro }}></div>
+      <div class="field"><label>Licencia</label><input type="text" name="sw_licencia" value="{{ form.sw_licencia or '' }}" placeholder="GPL, MPL 2.0, Apache..." {{ 'disabled' if ro }}></div>
+    </div>
+    <div class="field"><label>Proveedor o comunidad</label><input type="text" name="sw_proveedor" value="{{ form.sw_proveedor or '' }}" {{ 'disabled' if ro }}></div>
+    <div class="field"><label>Descripción</label><textarea name="sw_descripcion" {{ 'disabled' if ro }}>{{ form.sw_descripcion or '' }}</textarea></div>
+  </div>
+</div>
+<div class="card">
+  <div class="upper">Catálogo de referencia · RF-03</div>
+  {% if ev %}
+    {% set c = catalogos[0] %}<p>Snapshot del catálogo: <b>{{ c.nombre }} v{{ c.version }}</b> <span class="chip {{ c.estado }}">{{ c.estado }}</span></p>
+    <p class="small muted">La copia del catálogo se fijó al crear la evaluación; no cambia aunque el catálogo avance de versión.</p>
+  {% else %}
+    <div class="field" style="max-width:420px;margin-top:10px"><label>Catálogo publicado <span class="req">*</span></label>
+    <select name="catalogo_id">{% for c in catalogos %}<option value="{{ c.id }}">{{ c.nombre }} v{{ c.version }}</option>{% endfor %}</select></div>
+  {% endif %}
+</div>
+{% if not ro %}<div class="acciones"><button class="btn pri" type="submit">Guardar y continuar →</button></div>{% endif %}
+</form>
+{% if ev and ev.estado in ['borrador','en_curso','en_revision'] and (g.user.id == ev.lider_id or g.user.rol=='admin') %}
+<form method="post" action="{{ url_for('cancelar', eid=ev.id) }}" class="card acciones" style="margin-top:18px">
+  <span class="muted">¿Cancelar esta evaluación?</span><input type="text" name="motivo" placeholder="Motivo obligatorio" style="max-width:360px" required>
+  <button class="btn mal">Cancelar evaluación</button>
+</form>
+{% endif %}
+{% endblock %}

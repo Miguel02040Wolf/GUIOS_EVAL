@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{% block title %}GUIOS EVAL{% endblock %} · GUIOS EVAL</title><link rel="icon" href="{{ url_for('static', filename='favicon.svg') }}" type="image/svg+xml">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}"></head>
+<body>
+<div class="login">
+  <section class="brandp">
+    <div>
+      <div class="brand" style="padding:0;font-size:30px">GUIOS <span class="tag" style="font-size:13px">EVAL</span></div>
+      <p style="color:#C7D2FE;margin-top:6px">Sistema de evaluación de adopción de software con evidencia</p>
+      <div class="preview">
+        <div class="upper" style="color:#8B9BB8">Vista previa del sistema</div>
+        <div style="font-weight:600;margin:6px 0 12px">Ponderación por dimensión</div>
+        <div class="small">Factores tecnológicos</div><div class="bar"><i style="width:78%"></i></div>
+        <div class="small">Factores organizacionales</div><div class="bar"><i style="width:64%"></i></div>
+        <div class="small">Factores económicos</div><div class="bar"><i style="width:52%"></i></div>
+        <div class="small" style="color:#8B9BB8">Ponderación → FODA → recomendación</div>
+      </div>
+      <div class="steps-mini"><span>1 Datos generales</span><span>2 Factores relevantes</span><span>3 Subfactores</span><span>4 Resultado y recomendación</span></div>
+    </div>
+    <div>
+      <p style="font-size:18px;font-weight:600;margin:0">Decisiones de software repetibles, explicables y auditables.</p>
+      <p class="small" style="color:#8B9BB8">Versión nueva de GUIOS PRO FLOSS · UNEMI · 2026</p>
+    </div>
+  </section>
+  <section class="formp">
+    <div class="box">
+      {% for cat, msg in get_flashed_messages(with_categories=true) %}<div class="alert {{ cat }}">{{ msg }}</div>{% endfor %}
+      {% block caja %}{% endblock %}
+    </div>
+  </section>
+</div>
+</body></html>

@@ -1,0 +1,225 @@
+[
+ {
+  "dimension": "Tecnológica",
+  "nombre": "Compatibilidad",
+  "is": 3,
+  "alcance": "Externo",
+  "descripcion": "Capacidad del software para operar con otros sistemas, formatos y plataformas de la organización.",
+  "subfactores": [
+   "Una empresa proporciona una infraestructura de nube lista para usar para este software",
+   "Los programas informáticos pueden exportar formatos propietarios",
+   "El software interactúa y se integra con el software propietario existente",
+   "El software está certificado para operar en su nicho de mercado",
+   "El software es compatible con los casos de uso y las funcionalidades más comunes",
+   "El software es compatible con múltiples componentes de hardware",
+   "El software utiliza formatos estándar",
+   "El software es compatible con varios sistemas operativos diferentes (el software es multiplataforma)"
+  ]
+ },
+ {
+  "dimension": "Tecnológica",
+  "nombre": "Personalización",
+  "is": 3,
+  "alcance": "Externo",
+  "descripcion": "Grado en que el software puede adaptarse a la organización mediante su configuración o su código fuente.",
+  "subfactores": [
+   "El acceso al código fuente es un incentivo para la organización",
+   "El software se puede ampliar fácilmente para satisfacer las necesidades de la organización modificando el código fuente",
+   "Las innovaciones se introducen en el software a un ritmo rápido",
+   "El software es fácil de personalizar sin necesidad de modificar el código fuente",
+   "El software soporta nuevas funciones a través de módulos (el software es modular)",
+   "Hay un repositorio público de extensiones para este software"
+  ]
+ },
+ {
+  "dimension": "Tecnológica",
+  "nombre": "Prueba",
+  "is": 3,
+  "alcance": "Externo",
+  "descripcion": "Facilidad para instalar y probar el software antes de adoptarlo.",
+  "subfactores": [
+   "El software es fácil de desplegar y de probar"
+  ]
+ },
+ {
+  "dimension": "Tecnológica",
+  "nombre": "Fiabilidad",
+  "is": 3,
+  "alcance": "Externo",
+  "descripcion": "Comportamiento estable y confiable del software durante un período de uso determinado.",
+  "subfactores": [
+   "El software es fiable y estable",
+   "El software tiene un buen historial en cuanto a errores de seguridad (el software es seguro)",
+   "El software es más flexible que la solución propietaria",
+   "El software es más confiable que la solución propietaria",
+   "El programa proporciona una amplia variedad de funciones de control de acceso"
+  ]
+ },
+ {
+  "dimension": "Tecnológica",
+  "nombre": "Reusabilidad",
+  "is": 2,
+  "alcance": "Externo",
+  "descripcion": "Cantidad de código reutilizable que ofrece el software mediante bibliotecas y paquetes.",
+  "subfactores": [
+   "La licencia permite extensiones propietarias",
+   "El software se ofrece como una biblioteca / marco de trabajo"
+  ]
+ },
+ {
+  "dimension": "Tecnológica",
+  "nombre": "Usabilidad",
+  "is": 2,
+  "alcance": "Externo",
+  "descripcion": "Qué tan intuitiva y satisfactoria resulta la interfaz para los usuarios.",
+  "subfactores": [
+   "El software proporciona una interfaz gráfica de usuario (GUI)",
+   "El software es más fácil de usar que la alternativa propietaria",
+   "El software es fácil de aprender",
+   "El usuario está descontento con el software propietario"
+  ]
+ },
+ {
+  "dimension": "Tecnológica",
+  "nombre": "Mantenibilidad",
+  "is": 3,
+  "alcance": "Externo",
+  "descripcion": "Recursos que se deben dedicar para mantener el software en funcionamiento.",
+  "subfactores": [
+   "El software es mantenido activamente por los desarrolladores"
+  ]
+ },
+ {
+  "dimension": "Tecnológica",
+  "nombre": "Portabilidad",
+  "is": 2,
+  "alcance": "Externo",
+  "descripcion": "Posibilidad de implantar el software en más de una plataforma.",
+  "subfactores": [
+   "Una versión de aplicación móvil de este software está disponible",
+   "El software es una sistemas de administración de base de datos independiente"
+  ]
+ },
+ {
+  "dimension": "Tecnológica",
+  "nombre": "Documentación",
+  "is": 2,
+  "alcance": "Externo",
+  "descripcion": "Cantidad y calidad de la documentación disponible del software.",
+  "subfactores": [
+   "El software está bien documentado",
+   "La documentación de desarrollo cubre todas las características",
+   "La documentación está disponible en múltiples formatos",
+   "La documentación es fácil de entender",
+   "La documentación está actualizada",
+   "La documentación está escrita por escritores especializados (no desarrolladores)",
+   "La documentación del software es de alta calidad",
+   "El software viene con documentación de desarrollo",
+   "El software viene con documentación de usuario",
+   "La documentación del usuario cubre todas las características",
+   "Los formatos de datos están bien documentados"
+  ]
+ },
+ {
+  "dimension": "Organizacional",
+  "nombre": "Formación",
+  "is": 3,
+  "alcance": "Interno",
+  "descripcion": "Acciones para mejorar las habilidades y el conocimiento de los usuarios de la organización.",
+  "subfactores": [
+   "La adopción de este software permite a los usuarios mejorar las habilidades técnicas de TI",
+   "El personal de la organización puede aprender fácilmente por sí mismo a utilizar este software",
+   "El personal de la organización está capacitado para resolver problemas tecnológicos",
+   "Los planes de entrenamiento de este software están disponibles"
+  ]
+ },
+ {
+  "dimension": "Organizacional",
+  "nombre": "Tiempo de adopción",
+  "is": 2,
+  "alcance": "Interno",
+  "descripcion": "Tiempo que necesita la organización para implantar el software.",
+  "subfactores": [
+   "Los requisitos de instalación y despliegue del software son fáciles de cumplir",
+   "El tiempo requerido para adoptar este software es bajo"
+  ]
+ },
+ {
+  "dimension": "Organizacional",
+  "nombre": "Casos de estudio de adopción FLOSS",
+  "is": 2,
+  "alcance": "Externo",
+  "descripcion": "Existencia de experiencias documentadas de otras organizaciones que adoptaron el software.",
+  "subfactores": [
+   "Hay informes públicos disponibles en Internet que describen el éxito de la adopción de este software"
+  ]
+ },
+ {
+  "dimension": "Organizacional",
+  "nombre": "Centralidad de la tecnología de la información",
+  "is": 2,
+  "alcance": "Interno",
+  "descripcion": "Grado de dependencia de la organización respecto de su propia infraestructura de TI.",
+  "subfactores": [
+   "La adopción de este software mejora el entorno de trabajo de los usuarios",
+   "Centralizar la infraestructura de TI ayuda a acelerar la adopción de este software"
+  ]
+ },
+ {
+  "dimension": "Organizacional",
+  "nombre": "Apoyo de la alta dirección",
+  "is": 3,
+  "alcance": "Interno",
+  "descripcion": "Respaldo de los directivos de la organización al proceso de adopción.",
+  "subfactores": [
+   "La alta dirección apoya la adopción exitosa de este software"
+  ]
+ },
+ {
+  "dimension": "Organizacional",
+  "nombre": "Bloqueo de proveedores",
+  "is": 2,
+  "alcance": "Externo",
+  "descripcion": "Riesgo de depender de un único proveedor o de formatos cerrados.",
+  "subfactores": [
+   "El software reduce las dependencias de los proveedores en su entorno"
+  ]
+ },
+ {
+  "dimension": "Organizacional",
+  "nombre": "Soporte",
+  "is": 3,
+  "alcance": "Ambos",
+  "descripcion": "Disponibilidad de soporte técnico interno y externo para el software.",
+  "subfactores": [
+   "El soporte de la comunidad para este software está disponible",
+   "Soporte de expertos y consultores externos para consultas específicas está disponible",
+   "El soporte comercial de este software está disponible 24/7/365",
+   "Hay desarrolladores en su organización que saben cómo desarrollar este software",
+   "Soporte comercial para la personalización de software está disponible",
+   "Es fácil contratar personal informático en la comunidad que conozca este software"
+  ]
+ },
+ {
+  "dimension": "Organizacional",
+  "nombre": "Actitud hacia el cambio",
+  "is": 2,
+  "alcance": "Interno",
+  "descripcion": "Disposición de los usuarios a aceptar un nuevo software.",
+  "subfactores": [
+   "El personal de la organización muestra poca resistencia al cambio tecnológico",
+   "El personal técnico encargado del despliegue y soporte en la organización respalda la adopción de este software"
+  ]
+ },
+ {
+  "dimension": "Económica",
+  "nombre": "Coste total de propiedad",
+  "is": 3,
+  "alcance": "Interno",
+  "descripcion": "Costes de adquisición, implantación, formación y mantenimiento del software.",
+  "subfactores": [
+   "Es poco probable que haya costos ocultos al adoptar este software",
+   "La adopción de este software es menos costosa que la alternativa patentada"
+  ]
+ }
+]

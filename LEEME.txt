@@ -1,0 +1,21 @@
+GUIOS EVAL v2.1 - Versión nueva de GUIOS PRO FLOSS
+Grupo 5 - Procesos y Calidad de Software - UNEMI 2026
+
+CÓMO ABRIR EL SISTEMA
+1. Instala Python 3.10 o superior (https://www.python.org/downloads/) y marca "Add Python to PATH".
+2. Solo la primera vez: doble clic en instalar.bat. Instala las librerías y la IA local
+   (Ollama + qwen2.5:3b, unos 2 GB) y al final verifica que todo funcione. Si algo ya
+   está instalado, no lo vuelve a instalar.
+3. Cada vez que quieras usar el sistema: doble clic en iniciar.bat. Se abre el navegador
+   en http://127.0.0.1:5000 (no cierres la ventana negra mientras lo usas).
+4. Usuario: lider@guios.edu.ec  Contraseña: guios2026  (más usuarios en README.md)
+
+IA (opcional): instalar.bat te pregunta si tienes claves de Groq y Gemini, te ayuda a crearlas
+gratis con las páginas oficiales o instala la IA local sin internet. Las claves se guardan en
+claves_guios.env, dentro de esta carpeta. Cada persona usa sus propias claves.
+IMPORTANTE: al subir el proyecto a GitHub NO subas claves_guios.env (tiene tus claves y la del correo).
+
+La base de datos ya trae el caso piloto de la tesis (LibreOffice en la UNEMI) y otras evaluaciones.
+Para empezar en limpio: cierra el sistema y borra datos\guios_eval.db; se crea de nuevo al iniciar.
+Carpetas: guios (código), datos (base de datos y catálogo), pruebas (verificación).
+Detalles técnicos: README.md
